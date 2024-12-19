@@ -4,9 +4,9 @@
 <template>
   <div class="mx-3">
     <BaseButton
-      variant="ghost"
       class="!rounded-lg"
       aria-label="Toggle theme"
+      color="green"
       @click="toggleDark()"
     >
       <transition name="slide" mode="out-in">

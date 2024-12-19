@@ -28,16 +28,6 @@
       >
       </BaseButton>
     </div>
-    <BaseButton
-      class="ml-3"
-      target="_blank"
-      to="https://vuedesigner.com"
-      size="xl"
-      icon="i-mdi-pine-tree"
-      color="secondary"
-      trailing
-      ><span class="pl-2">Try Now</span>
-    </BaseButton>
   </div>
 </template>
 <style scoped></style>

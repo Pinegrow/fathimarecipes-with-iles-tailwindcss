@@ -6,6 +6,7 @@
     >
       <!-- <NavBar class="fixed bg-white dark:bg-neutral-950 shadow z-20" /> -->
       <!-- <main class="mt-24 shadow"> -->
+      <NavBar></NavBar>
       <main>
         <slot />
       </main>
