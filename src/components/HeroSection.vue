@@ -22,6 +22,7 @@
     <div class="absolute inset-0 bg-black/50"></div>
     <div
       class="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
+      data-pg-siteinfo
     >
       <h1
         class="text-4xl sm:text-5xl lg:text-6xl font-serif text-white font-bold mb-6"

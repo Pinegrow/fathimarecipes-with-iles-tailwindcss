@@ -28,6 +28,9 @@ export default defineConfig({
       '@pinegrow/iles-module',
       {
         liveDesigner: {
+          wordpress: {
+            // dataPath: false, // Set to false to turn off addition of data fetching composable(s) to the project. To customize the path, set to an absolute or relative path, default is 'data/pg-wordpress/query.ts'.
+          },
           iconPreferredCase: 'unocss', // default value (can be removed), unocss by default uses the unocss format for icon names
           devtoolsKey: 'devtoolsKey', // see app.ts
           /* Please ensure that you update the filenames and paths to accurately match those used in your project. */

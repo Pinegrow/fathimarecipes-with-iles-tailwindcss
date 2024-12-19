@@ -2,8 +2,8 @@
     title: Home
 </page>
 <template>
-    <div>
-        <HeroSection/>
-    </div>
+  <div>
+    <HeroSection />
+  </div>
 </template>
 <style scoped></style>
