@@ -1,8 +1,14 @@
-# Vue Designer îles Tailwind CSS - Quick start template
+# Fathima Recipes with 🏝 îles & TailwindCSS
 
-This is a starter template that pre-includes the [Pinegrow îles Module](https://www.npmjs.com/package/@pinegrow/iles-module), [Pinegrow Tailwind CSS Plugin](https://www.npmjs.com/package/@pinegrow/tailwindcss-plugin) and other goodies for Vue Designer.
+This repository was live-designed with Vue Designer by following the free YouTube course "**Headless WordPress Made Easy: 🏝 îles + Generative AI with Vue Designer**", which is part of the "**Learn With Vue Designer**" series. Check it out [here](https://pinegrow.com/docs/vue/tutorials-courses/).
 
-Demo - https://pg-iles-tailwindcss.netlify.app/
+"**fathimarecipes.com**" is a simple MPA-SSG recipe blog where the data is fetched from a WordPress instance in a headless way. The JAMstack approach provides great flexibility in designing and presenting content to users. Only publicly accessible content, such as posts, site info, categories, and tags, is fetched.
+
+This is a sample project created using:
+
+- Starter Template - [Vue Designer îles Tailwind CSS - Quick start template](https://github.com/pinegrow/pg-iles-tailwindcss-custom) (see next section for its Readme)
+
+- Final Output Demo - https://fathimarecipes.app/
 
 ## Vue Designer
 
