@@ -9,6 +9,22 @@
   const verticalNavlinks = computed(() => {
     return navlinks.value.slice(2, navlinks.value.length)
   })
+
+  /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 begins */
+  const { getPgWordpressSiteinfo } = usePgWordpressData()
+  const pgData: any = {
+    pgWordpressData: {},
+  }
+
+  const pgSiteinfoArgs = { siteinfo: {} }
+
+  pgData.pgWordpressData.siteinfo = {
+    ...pgSiteinfoArgs.siteinfo,
+    data: await getPgWordpressSiteinfo(pgSiteinfoArgs.siteinfo),
+  }
+
+  const pgSiteinfo = pgData.pgWordpressData.siteinfo.data
+  /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 ends */
 </script>
 <template>
   <div class="w-full">
@@ -16,9 +32,13 @@
       <div class="container mx-auto px-4 sm:px-6">
         <div class="flex h-24 items-center justify-between">
           <div class="flex items-center justify-between w-full">
-            <div class="flex flex-shrink-0 items-center">
+            <div class="flex flex-shrink-0 items-center" data-pg-siteinfo>
+              <BaseIcon
+                name="i-vscode-icons-file-type-coffeelint"
+                height="32px"
+              ></BaseIcon>
               <a href="/" class="text-primary-600 dark:text-primary-200">
-                <h5 class="font-extrabold mb-0 ml-2">Vue Designer</h5>
+                <h5 class="font-extrabold mb-0 ml-2">{{ pgSiteinfo.name }}</h5>
               </a>
             </div>
             <NavPrimary

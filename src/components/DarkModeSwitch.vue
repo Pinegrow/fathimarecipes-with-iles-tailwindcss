@@ -6,7 +6,7 @@
     <BaseButton
       class="!rounded-lg"
       aria-label="Toggle theme"
-      color="green"
+      variant="soft"
       @click="toggleDark()"
     >
       <transition name="slide" mode="out-in">
