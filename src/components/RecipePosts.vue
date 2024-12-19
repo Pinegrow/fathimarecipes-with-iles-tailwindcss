@@ -22,7 +22,7 @@
   }
 
   const pgPostsArgs = {
-    posts: { filters: { per_page: '10', _embed: 'true', search: 'pine cone' } },
+    posts: { filters: { per_page: '10', _embed: 'true' } },
   }
 
   pgData.pgWordpressData.posts = {
