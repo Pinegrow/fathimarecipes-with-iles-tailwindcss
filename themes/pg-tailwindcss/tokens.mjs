@@ -101,46 +101,46 @@ const pg_colors = {
     900: '#831843',
   },
   primary: {
-    50: '#ebf0f7',
-    100: '#cfddef',
-    200: '#b2cae6',
-    300: '#94b7de',
-    400: '#74a4d5',
-    500: '#4e92cd',
-    600: '#0681c4',
-    700: '#0676b3',
-    800: '#056ba3',
-    900: '#056193',
-    950: '#045683',
-    DEFAULT: '#044c74',
+    50: '#f0f3ec',
+    100: '#dde4cb',
+    200: '#cad5aa',
+    300: '#b6c78b',
+    400: '#a3b86b',
+    500: '#8eaa4b',
+    600: '#799c27',
+    700: '#6f8f24',
+    800: '#658221',
+    900: '#5b751d',
+    950: '#51691a',
+    DEFAULT: '#485c17',
   },
   secondary: {
-    50: '#ebedf1',
-    100: '#cad1df',
-    200: '#a8b5cd',
-    300: '#879abb',
-    400: '#6581aa',
-    500: '#406898',
-    600: '#045087',
-    700: '#04497c',
-    800: '#034370',
-    900: '#033c65',
-    950: '#03365a',
-    DEFAULT: '#022f50',
+    50: '#edeeeb',
+    100: '#d1d5c5',
+    200: '#b6bda1',
+    300: '#9ba57d',
+    400: '#808e5b',
+    500: '#667739',
+    600: '#4b6116',
+    700: '#455914',
+    800: '#3e5112',
+    900: '#384911',
+    950: '#32410f',
+    DEFAULT: '#2c390d',
   },
   tertiary: {
-    50: '#eff4fa',
-    100: '#dae6f5',
-    200: '#c5d8f0',
-    300: '#b0cbeb',
-    400: '#9abee6',
-    500: '#83b1e1',
-    600: '#6aa4dc',
-    700: '#6196c9',
-    800: '#5888b7',
-    900: '#507ba5',
-    950: '#476e93',
-    DEFAULT: '#3f6182',
+    50: '#f5ecec',
+    100: '#eecfcd',
+    200: '#e5b3ae',
+    300: '#da9690',
+    400: '#ce7a74',
+    500: '#c05d58',
+    600: '#b13e3e',
+    700: '#a23939',
+    800: '#933434',
+    900: '#852f2f',
+    950: '#772a2a',
+    DEFAULT: '#692525',
   },
   neutral: {
     50: '#ebebeb',
@@ -215,26 +215,22 @@ const pg_colors = {
 }
 
 const pg_fonts = {
-  sans: ["'Fira Sans', sans-serif"],
-  serif: ["'Kalam', sans-serif"],
+  sans: ["'Proza Libre', sans-serif"],
+  serif: ["'Sora', sans-serif"],
 }
 
 const pg_font_urls = [
-  'https://fonts.googleapis.com/css?family=Fira+Sans:100,200,300,400,500,600,700,800,900|Kalam:300,400,700&display=swap',
+  'https://fonts.googleapis.com/css?family=Proza+Libre:400,500,600,700,800|Sora:100,200,300,400,500,600,700,800&display=swap',
 ]
 
 const pg_backgrounds = {
   'design-image':
-    "url('https://images.unsplash.com/photo-1516091877740-fde016699f2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wyMDkyMnwwfDF8c2VhcmNofDEzfHxpc2xhbmR8ZW58MHx8fHwxNjg3MTgxNDIyfDA&ixlib=rb-4.0.3&q=80&w=1080')",
-  'design-image-large':
-    "url('https://images.unsplash.com/photo-1516091877740-fde016699f2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wyMDkyMnwwfDF8c2VhcmNofDEzfHxpc2xhbmR8ZW58MHx8fHwxNjg3MTgxNDIyfDA&ixlib=rb-4.0.3&q=80&w=2000')",
+    "url('file:///Users/techakayy/Templates/fathimarecipes-with-iles-tailwindcss/src/assets/images/hero.jpg')",
 }
 
 const pg_background_urls = {
   'design-image':
-    'https://images.unsplash.com/photo-1516091877740-fde016699f2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wyMDkyMnwwfDF8c2VhcmNofDEzfHxpc2xhbmR8ZW58MHx8fHwxNjg3MTgxNDIyfDA&ixlib=rb-4.0.3&q=80&w=1080',
-  'design-image-large':
-    'https://images.unsplash.com/photo-1516091877740-fde016699f2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wyMDkyMnwwfDF8c2VhcmNofDEzfHxpc2xhbmR8ZW58MHx8fHwxNjg3MTgxNDIyfDA&ixlib=rb-4.0.3&q=80&w=2000',
+    'file:///Users/techakayy/Templates/fathimarecipes-with-iles-tailwindcss/src/assets/images/hero.jpg',
 }
 
 export { pg_colors, pg_fonts, pg_font_urls, pg_backgrounds, pg_background_urls }
