@@ -4,6 +4,7 @@
 <template>
   <div>
     <HeroSection />
+    <RecipePosts />
   </div>
 </template>
 <style scoped></style>
