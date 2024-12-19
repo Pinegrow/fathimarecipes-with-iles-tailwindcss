@@ -11,6 +11,7 @@
 </page>
 <script lang="ts">
   // import { fetchArticles } from '~/composables/articles'
+  import { WP_REST_API_POST } from 'wp-types'
 
   export default definePageComponent({
     async getStaticPaths() {
@@ -31,6 +32,19 @@
 
       const pgPosts = pgData.pgWordpressData.posts.data
       /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 ends */
+
+      // pgPosts.forEach((pgPost: WP_REST_API_POST) => {
+      //   pgPost._embedded['wp:featuredmedia'] = pgPost._embedded[
+      //     'wp:featuredmedia'
+      //   ].map((media: any) => ({
+      //     ...media,
+      //     source_url: `${import.meta.env.VITE_WORDPRESS_URL}${media.source_url}`,
+      //   }))
+      //   pgPost.content.rendered = pgPost.content.rendered.replaceAll(
+      //     '/wp-content/',
+      //     `${import.meta.env.VITE_WORDPRESS_URL}/wp-content/`,
+      //   )
+      // })
 
       const recipes = pgPosts.map((recipe) => {
         return {
