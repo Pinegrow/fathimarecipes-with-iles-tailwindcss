@@ -225,12 +225,12 @@ const pg_font_urls = [
 
 const pg_backgrounds = {
   'design-image':
-    "url('file:///Users/techakayy/Templates/fathimarecipes-with-iles-tailwindcss/src/assets/images/hero.jpg')",
+    "url('https://res.cloudinary.com/drxugtlht/images/w_2560,h_1920,c_scale/v1733778193/IMG_4004/IMG_4004.jpeg')",
 }
 
 const pg_background_urls = {
   'design-image':
-    'file:///Users/techakayy/Templates/fathimarecipes-with-iles-tailwindcss/src/assets/images/hero.jpg',
+    'https://res.cloudinary.com/drxugtlht/images/w_2560,h_1920,c_scale/v1733778193/IMG_4004/IMG_4004.jpeg',
 }
 
 module.exports = {

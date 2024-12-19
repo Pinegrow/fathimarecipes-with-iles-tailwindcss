@@ -21,7 +21,7 @@
                 <dmcolor key="info" color="#0288d1" shade-50="#ebf1f9" shade-100="#d0dff2" shade-200="#b4ccec" shade-300="#96bbe5" shade-400="#76a9df" shade-500="#5098d8" shade-600="#0288d1" shade-700="#027cbf" shade-800="#0271ae" shade-900="#02669d" shade-950="#015b8c" shade-DEFAULT="#5098d8"/>
             </dmdesignskill>
             <dmdesignskill skill="fonts" family_1="Proza Libre" family_2="Sora"></dmdesignskill>
-            <dmdesignskill skill="background" image_for_colors advanced="true" filter_blur="0" filter_brightness="100" filter_contrast="100" filter_grayscale="0" filter_hue-rotate="0" filter_invert="0" filter_opacity="100" filter_saturate="100" filter_sepia="0" image="src/assets/images/hero.jpg" selector=".poster" keyword="island water"></dmdesignskill>
+            <dmdesignskill skill="background" image_for_colors advanced="true" filter_blur="0" filter_brightness="100" filter_contrast="100" filter_grayscale="0" filter_hue-rotate="0" filter_invert="0" filter_opacity="100" filter_saturate="100" filter_sepia="0" image="https://res.cloudinary.com/drxugtlht/images/w_2560,h_1920,c_scale/v1733778193/IMG_4004/IMG_4004.jpeg" selector=".poster" keyword="island water"></dmdesignskill>
         </dmdesign>
         <dmdesign>
             <dmdesignskill skill="tw.colors">
