@@ -8,7 +8,7 @@
     navOrder: 3
     type: primary
     icon: i-mdi-home
-</page> 
+</page>
 <script lang="ts">
   // import { fetchArticles } from '~/composables/articles'
 
@@ -32,7 +32,14 @@
       const pgPosts = pgData.pgWordpressData.posts.data
       /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 ends */
 
-      const articles = pgPosts /*await fetchArticles()*/
+      const recipes = pgPosts.map((recipe) => {
+        return {
+          ...recipe,
+          dateDisplay: new Date(recipe.date).toDateString(),
+        }
+      })
+
+      const articles = recipes /*await fetchArticles()*/
 
       return articles.map((article) => ({
         // Specify the parameters for the page.
@@ -43,7 +50,7 @@
       }))
     },
   })
-</script> 
+</script>
 <script setup lang="ts">
   // import { usePage } from 'iles'
 
@@ -59,30 +66,43 @@
   useHead({
     title: article?.title,
   })
-</script> 
-<template layout="default"> 
-    <div>
-        <article class="max-w-4xl mx-auto px-4 py-12">
-            <div class="space-y-8">
-                <!-- Featured Image -->
-                <img alt="Homemade Pasta Dish" class="w-full h-[500px] object-cover rounded-lg shadow-lg" :src="article._embedded['wp:featuredmedia'][0].source_url"/>
-                <!-- Article Header -->
-                <header class="space-y-4">
-                    <h1 class="font-serif text-4xl md:text-5xl text-primary-800 leading-tight" v-html="article.title.rendered"></h1>
-                    <div class="flex items-center space-x-4 text-sm text-gray-600">
-                        <time>March 15, 2024</time>
-                    </div>
-                    <!-- Categories and Tags -->
-                    <div class="flex flex-wrap gap-2"><span v-for="(category, index) in article._embedded['wp:term'][0]" :key="index" class="px-3 py-1 bg-secondary-100 text-secondary-800 rounded-full text-sm">{{ category.name }}</span>
-                    </div>
-                </header>
-                <!-- Article Excerpt -->
-                <!-- Article Content -->
-                <div class="prose prose-lg max-w-none">
-                    <div v-html="article.content.rendered"></div>
-                </div>
-            </div>
-        </article>                  
-    </div>     
-</template> 
+</script>
+<template layout="default">
+  <div>
+    <article class="max-w-4xl mx-auto px-4 py-12">
+      <div class="space-y-8">
+        <!-- Featured Image -->
+        <img
+          alt="Homemade Pasta Dish"
+          class="w-full h-[500px] object-cover rounded-lg shadow-lg"
+          :src="article._embedded['wp:featuredmedia'][0].source_url"
+        />
+        <!-- Article Header -->
+        <header class="space-y-4">
+          <h1
+            class="font-serif text-4xl md:text-5xl text-primary-800 leading-tight"
+            v-html="article.title.rendered"
+          ></h1>
+          <div class="flex items-center space-x-4 text-sm text-gray-600">
+            <time>{{ article.dateDisplay }}</time>
+          </div>
+          <!-- Categories and Tags -->
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="(category, index) in article._embedded['wp:term'][0]"
+              :key="index"
+              class="px-3 py-1 bg-secondary-100 text-secondary-800 rounded-full text-sm"
+              >{{ category.name }}</span
+            >
+          </div>
+        </header>
+        <!-- Article Excerpt -->
+        <!-- Article Content -->
+        <div class="prose prose-lg max-w-none">
+          <div v-html="article.content.rendered"></div>
+        </div>
+      </div>
+    </article>
+  </div>
+</template>
 <style scoped></style>

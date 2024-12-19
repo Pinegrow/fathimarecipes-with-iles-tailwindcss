@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { WP_REST_API_POST } from 'wp-types'
   const { name } = defineProps({
     name: {
       type: String,
@@ -29,6 +30,13 @@
 
   const pgPosts = pgData.pgWordpressData.posts.data
   /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 ends */
+
+  const recipes = pgPosts.map((recipe: WP_REST_API_POST) => {
+    return {
+      ...recipe,
+      dateDisplay: new Date(recipe.date).toDateString(),
+    }
+  })
 </script>
 <template>
   <div class="container mx-auto px-4 py-16">
@@ -40,7 +48,7 @@
       data-pg-posts
     >
       <article
-        v-for="(pgPost, index) in pgPosts"
+        v-for="(pgPost, index) in recipes"
         :key="index"
         class="bg-white rounded-lg overflow-hidden shadow-lg"
       >
@@ -53,7 +61,9 @@
             />
           </div>
           <div class="p-6">
-            <p class="text-secondary-600 text-sm mb-2">September 15, 2023</p>
+            <p class="text-secondary-600 text-sm mb-2">
+              {{ pgPost.dateDisplay }}
+            </p>
             <h3
               class="font-serif text-2xl text-primary-800 mb-3"
               v-html="pgPost.title.rendered"
