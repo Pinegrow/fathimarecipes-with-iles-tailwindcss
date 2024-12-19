@@ -14,6 +14,22 @@
   // const addToCart = (item, quantity /*, event*/) => {
   // 	emit('addToCart', { item, quantity })
   // }
+
+  /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 begins */
+  const { getPgWordpressSiteinfo } = usePgWordpressData()
+  const pgData: any = {
+    pgWordpressData: {},
+  }
+
+  const pgSiteinfoArgs = { siteinfo: {} }
+
+  pgData.pgWordpressData.siteinfo = {
+    ...pgSiteinfoArgs.siteinfo,
+    data: await getPgWordpressSiteinfo(pgSiteinfoArgs.siteinfo),
+  }
+
+  const pgSiteinfo = pgData.pgWordpressData.siteinfo.data
+  /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 ends */
 </script>
 <template>
   <header
@@ -27,13 +43,12 @@
       <h1
         class="text-4xl sm:text-5xl lg:text-6xl font-serif text-white font-bold mb-6"
       >
-        Discover the Joy of Homemade Cooking
+        {{ pgSiteinfo.name }}
       </h1>
       <p
         class="text-lg sm:text-xl lg:text-2xl font-sans text-white/90 mb-8 max-w-3xl mx-auto"
       >
-        Explore delicious recipes, cooking tips, and culinary adventures that
-        will inspire your kitchen creativity
+        {{ pgSiteinfo.description }}
       </p>
       <a
         href="#recipes"
