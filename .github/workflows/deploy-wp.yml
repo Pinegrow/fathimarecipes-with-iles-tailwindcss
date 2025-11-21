@@ -11,12 +11,12 @@ jobs:
 
     steps:
       # ---------------------------------------------------------
-      # 1. Checkout full git history (required for safe diff)
+      # 1. Checkout repo (need last 2 commits for HEAD~1 diff)
       # ---------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       # ---------------------------------------------------------
       # 2. Install zip tool
@@ -25,24 +25,24 @@ jobs:
         run: sudo apt-get install zip -y
 
       # ---------------------------------------------------------
-      # 3. Generate version string (timestamp)
+      # 3. Generate timestamp release version
       # ---------------------------------------------------------
       - name: Generate deployment version
         id: version
         run: echo "VERSION=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
       # ---------------------------------------------------------
-      # 4. Determine changed files using SAFE DIFF
+      # 4. Identify changed files using SAFE DIFF (HEAD~1 → HEAD)
       # ---------------------------------------------------------
-      - name: Get changed file list
+      - name: Identify changed files
         id: diff
         run: |
           echo "files<<EOF" >> $GITHUB_ENV
-          git diff --name-only origin/main HEAD >> $GITHUB_ENV
+          git diff --name-only HEAD~1 HEAD >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       # ---------------------------------------------------------
-      # 5. Detect changed PLUGINS based on safe diff
+      # 5. Detect changed plugins
       # ---------------------------------------------------------
       - name: Detect changed plugins
         run: |
@@ -51,7 +51,6 @@ jobs:
 
           for plugin in */ ; do
             plugin_name="${plugin%/}"
-
             if echo "${{ env.files }}" | grep -q "plugins/$plugin_name"; then
               echo "📦 Packaging plugin: $plugin_name"
               cd "$plugin_name"
@@ -62,7 +61,7 @@ jobs:
           done
 
       # ---------------------------------------------------------
-      # 6. Detect changed THEMES based on safe diff
+      # 6. Detect changed themes
       # ---------------------------------------------------------
       - name: Detect changed themes
         run: |
@@ -71,7 +70,6 @@ jobs:
 
           for theme in */ ; do
             theme_name="${theme%/}"
-
             if echo "${{ env.files }}" | grep -q "themes/$theme_name"; then
               echo "🎨 Packaging theme: $theme_name"
               cd "$theme_name"
@@ -82,7 +80,7 @@ jobs:
           done
 
       # ---------------------------------------------------------
-      # 7. Upload ZIPs to remote server via SCP
+      # 7. Upload built ZIPs to server
       # ---------------------------------------------------------
       - name: Upload ZIPs to server
         uses: appleboy/scp-action@v0.1.7
@@ -95,9 +93,7 @@ jobs:
           target: '/home/${{ secrets.SSH_USER }}/deploy/'
 
       # ---------------------------------------------------------
-      # 8. Zero-downtime deployment (release folders + symlink)
-      #    Also includes:
-      #    ✔ cleanup old releases (keep last 5)
+      # 8. Run deployment on server (zero downtime)
       # ---------------------------------------------------------
       - name: Deploy on server
         uses: appleboy/ssh-action@v0.1.7
@@ -132,7 +128,7 @@ jobs:
 
               wp plugin activate "$plugin" --allow-root || true
 
-              # Delete old releases (keep last 5)
+              # Cleanup: keep last 5 releases
               ls -dt $PLUGIN_DIR/releases/* | tail -n +6 | xargs rm -rf || true
             done
 
@@ -155,18 +151,18 @@ jobs:
 
               wp theme activate "$theme" --allow-root || true
 
-              # Delete old releases (keep last 5)
+              # Cleanup: keep last 5 releases
               ls -dt $THEME_DIR/releases/* | tail -n +6 | xargs rm -rf || true
             done
 
-            echo "🧹 Cleaning deploy temp files..."
+            echo "🧹 Cleaning temp files..."
             rm "$DEPLOY_DIR"/plugins/*.zip 2>/dev/null || true
             rm "$DEPLOY_DIR"/themes/*.zip 2>/dev/null || true
 
             echo "🎉 Deployment complete!"
 
       # ---------------------------------------------------------
-      # 9. Auto-generate GitHub Release + Notes
+      # 9. Create GitHub Release
       # ---------------------------------------------------------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -177,16 +173,15 @@ jobs:
             ## Automated Deployment Summary
             **Version:** ${{ env.VERSION }}
 
-            ### 📦 Plugins/Themes Changed
+            ### 📦 Changed Files
             ```
             ${{ env.files }}
             ```
 
-            ### 🔧 Deployment Type
+            ### 🔧 Deployment Details
             - Zero downtime
-            - Safe diff detection
-            - Auto cleanup (keep last 5 releases)
             - WP-CLI activation
-
+            - Auto cleanup (keeps last 5 releases)
+            - Safe diff (HEAD~1 → HEAD)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
