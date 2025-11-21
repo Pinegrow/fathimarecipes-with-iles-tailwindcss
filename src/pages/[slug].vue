@@ -113,7 +113,7 @@
         </header>
         <!-- Article Excerpt -->
         <!-- Article Content -->
-        <div class="max-w-none prose prose-lg dark:!prose-gray">
+        <div class="max-w-none prose prose-lg dark:prose-invert">
           <div v-html="article.content.rendered"></div>
         </div>
       </div>
