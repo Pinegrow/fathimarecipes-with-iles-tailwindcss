@@ -14,12 +14,11 @@
   })
   // console.log(response)
 </script>
-
 <template>
   <div>
     <div v-html="response[0].content.rendered"></div>
     <Hero v-if="false" />
-    <RecipePosts />
+    <RecipePosts id="recipes" />
   </div>
 </template>
 <style scoped></style>
