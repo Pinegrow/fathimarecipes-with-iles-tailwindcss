@@ -2,7 +2,7 @@ import {
   pg_colors,
   pg_fonts,
   pg_backgrounds,
-} from './themes/pg-tailwindcss/tokens.mjs'
+} from './vuedesigner/pg-tailwindcss/themes/tokens.mjs'
 
 import { getFontsWithFallback } from './src/utils/font'
 import { safelist } from './src/utils/colors'

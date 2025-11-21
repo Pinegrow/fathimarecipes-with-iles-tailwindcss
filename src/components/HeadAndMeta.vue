@@ -4,7 +4,7 @@
 
   import siteDefn from '@/site'
   import image from '@/screenshots/image.jpg'
-  import { pg_font_urls } from '~~/themes/pg-tailwindcss/tokens.mjs'
+  import { pg_font_urls } from '~~/vuedesigner/pg-tailwindcss/themes/tokens.mjs'
 
   type TurboScript = Script & { once: true }
 
