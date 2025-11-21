@@ -6,20 +6,34 @@ export default {
   title: 'Fathima Recipes',
   description:
     'Discover the authentic flavors of Tamil cuisine, crafted with love and tradition by Fathima Kaja!',
+  logo: 'i-vscode-icons:file-type-coffeelint',
   author: 'Pinegrow',
-  url: 'https://fathimarecipes-with-iles-tailwindcss.netlify.app',
-  nav: [
-    {
-      text: 'Home',
-      link: '/',
-      type: 'primary',
-      icon: 'i-mdi-home',
-    },
-    {
-      text: 'About Me',
-      link: '/about-me',
-      type: 'primary',
-      icon: 'i-mdi-home',
-    },
-  ],
+  url: 'https://pizzeria-iles.netlify.app',
+  github: 'https://github.com/pinegrow/pizzeria-iles',
+  ogImageUrl: 'og-image.jpg', // absolute url (or) from public folder
+  generator: 'https://vuedesigner.com',
+  defaultLocale: 'en', // default
+  identity: {
+    type: 'Organization',
+  } as any,
+  twitter: '@vuedesigner',
+  trailingSlash: false, // default
+  titleSeparator: '|', // default
+
+  navs: {
+    primary: [
+      {
+        title: 'Home',
+        icon: 'i-mdi-home',
+        to: '/',
+      },
+    ],
+    secondary: [
+      {
+        title: 'About Us',
+        icon: 'i-mdi-home',
+        to: '/about-us',
+      },
+    ],
+  },
 }

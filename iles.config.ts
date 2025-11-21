@@ -6,14 +6,14 @@ import AutoImportAPIs from 'unplugin-auto-import/vite'
 import Unocss from 'unocss/vite'
 import presetIcons from '@unocss/preset-icons'
 import VueDevTools from 'vite-plugin-vue-devtools'
-import { unheadComposablesImports } from 'unhead'
+import { unheadVueComposablesImports } from '@unhead/vue'
 
 // import myIlesModule from './src/modules/my-module'
 
 // import { visualizer } from 'rollup-plugin-visualizer'
 
-import site from './src/site'
-const { url: siteUrl } = site
+import siteMeta from './src/site'
+const { url: siteUrl } = siteMeta
 
 export default defineConfig({
   siteUrl,
@@ -32,7 +32,6 @@ export default defineConfig({
             // dataPath: false, // Set to false to turn off addition of data fetching composable(s) to the project. To customize the path, set to an absolute or relative path, default is 'data/pg-wordpress/query.ts'.
           },
           iconPreferredCase: 'unocss', // default value (can be removed), unocss by default uses the unocss format for icon names
-          devtoolsKey: 'devtoolsKey', // see app.ts
           /* Please ensure that you update the filenames and paths to accurately match those used in your project. */
           tailwindcss: {
             configPath: 'tailwind.config.ts',
@@ -129,7 +128,7 @@ export default defineConfig({
           // 'vue-router',
           // 'vue-i18n',
           // 'vue/macros',
-          unheadComposablesImports[0],
+          unheadVueComposablesImports,
           '@vueuse/core',
           'pinia',
         ],

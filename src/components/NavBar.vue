@@ -1,15 +1,12 @@
 <script setup lang="ts">
-  import { computed } from 'vue'
-  import { useNavMenu } from '@/composables/nav-menu'
-
-  const { navlinks, currentPath } = useNavMenu()
-  const horizontalNavlinks = computed(() => {
-    return navlinks.value.slice(0, 2)
-  })
-  const verticalNavlinks = computed(() => {
-    return navlinks.value.slice(2, navlinks.value.length)
+  defineProps({
+    currentPath: {
+      type: String,
+      default: '/',
+    },
   })
 
+  const { allNavs, navsPrimary, navsSecondary } = useNavMenu()
   /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 begins */
   const { getPgWordpressSiteinfo } = usePgWordpressData()
   const pgData: any = {
@@ -42,7 +39,7 @@
               </a>
             </div>
             <NavPrimary
-              :navlinks="horizontalNavlinks"
+              :navs="navsPrimary"
               :current-path="currentPath"
               class="hidden sm:flex sm:ml-6"
               client:media="screen and (min-width: 640px)"
@@ -50,19 +47,15 @@
           </div>
           <DarkModeSwitch client:load />
           <div class="-mr-2 items-center relative">
-            <NavBarHamburger
-              v-if="verticalNavlinks.length"
+            <NavHamburger
+              v-if="navsSecondary.length"
               class="hidden sm:block"
               client:load
             />
-            <NavBarHamburger
-              v-if="navlinks.length"
-              class="sm:hidden"
-              client:load
-            />
+            <NavHamburger v-if="allNavs.length" class="sm:hidden" client:load />
             <NavSecondary
               class="hidden sm:flex sm:justify-end absolute right-0 mt-4"
-              :navlinks="verticalNavlinks"
+              :navs="navsSecondary"
               :current-path="currentPath"
               client:media="screen and (min-width: 640px)"
             />
@@ -71,7 +64,7 @@
       </div>
       <NavSecondary
         class="sm:hidden"
-        :navlinks="navlinks"
+        :navs="allNavs"
         :current-path="currentPath"
         client:media="screen and (max-width: 640px)"
       />

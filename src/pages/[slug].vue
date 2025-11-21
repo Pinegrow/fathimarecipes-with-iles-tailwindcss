@@ -13,6 +13,7 @@
   // import { fetchArticles } from '~/composables/articles'
   import { WP_REST_API_POST } from 'wp-types'
 
+  /* https://github.com/directus/eslint-config/issues/2 */
   export default definePageComponent({
     async getStaticPaths() {
       /* Auto-generated logic by Vue Designer Headless Wordpress 6.7 begins */

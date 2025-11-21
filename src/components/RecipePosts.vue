@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { WP_REST_API_POST } from 'wp-types'
+  import type { WP_REST_API_POST } from 'wp-types'
   const { name } = defineProps({
     name: {
       type: String,
@@ -21,9 +21,7 @@
     pgWordpressData: {},
   }
 
-  const pgPostsArgs = {
-    posts: { filters: { per_page: '10', _embed: 'true' } },
-  }
+  const pgPostsArgs = { posts: { filters: { per_page: '5', _embed: 'true' } } }
 
   pgData.pgWordpressData.posts = {
     ...pgPostsArgs.posts,

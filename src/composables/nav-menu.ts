@@ -1,10 +1,11 @@
-import { computed } from 'vue'
-import { usePage, useRoute } from 'iles'
+import siteMeta from '@/site'
 
 export const useNavMenu = () => {
-  const { site } = usePage()
-  const navlinksFromConfig = site.nav
-  const navlinks = computed(() => navlinksFromConfig)
+  const navs = siteMeta.navs
+
+  const allNavs = Object.values(navs).reduce((acc, navMenu) => {
+    return [...acc, ...navMenu]
+  }, [])
 
   const currentRoute = useRoute()
   const currentPath = computed(() => {
@@ -12,16 +13,9 @@ export const useNavMenu = () => {
   })
 
   return {
-    navlinks,
+    allNavs,
+    navsPrimary: navs.primary,
+    navsSecondary: navs.secondary,
     currentPath,
   }
-}
-
-export const isCurrentRoute = (navlink, currentPath) => {
-  if (!currentPath) {
-    currentPath = useNavMenu().currentPath.value
-  }
-  return navlink.link === '/'
-    ? currentPath === navlink.link
-    : currentPath.startsWith(navlink.link)
 }
