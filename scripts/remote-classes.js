@@ -1,0 +1,20 @@
+import fs from 'fs'
+const res = await fetch('https://admin.fathimarecipes.com/wp-json/wp/v2/blocks')
+const json = await res.json()
+
+const markup = json.length ? json[0].content.rendered : ''
+
+function decode(str) {
+  return str
+    .replace(/\\n/g, '\n') // remove \n
+    .replace(/\\"/g, '"') // remove \"
+    .replace(/\\'/g, "'") // remove \'
+    .replace(/\\\\/g, '\\') // remove escaped slash
+    .replace(/&quot;/g, '"') // html-encoded "
+    .replace(/&#039;/g, "'") // html-encoded '
+    .replace(/&amp;/g, '&') // html-encoded &
+}
+
+const decodedMarkup = decode(markup)
+
+fs.writeFileSync('_pginfo/remote-classes.html', decodedMarkup)
