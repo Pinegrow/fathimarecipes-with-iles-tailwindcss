@@ -1,4 +1,4 @@
-name: Deploy WordPress Plugins & Themes (v9)
+name: Deploy WordPress Plugins & Themes (v10)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Full Deployment Pipeline (v9)
+    name: Full Deployment Pipeline (v10)
     runs-on: ubuntu-latest
 
     steps:
@@ -29,25 +29,41 @@ jobs:
           echo "Changed files:"
           git diff --name-only HEAD~1 HEAD || true
 
+      # ---------------------------------------
+      # ZIP PLUGINS (correct folder structure)
+      # ---------------------------------------
       - name: Detect & package changed plugins
         run: |
           mkdir -p deploy_build/plugins
-          for plugin in vuedesigner/pg-wordpress/plugins/*; do
+          cd vuedesigner/pg-wordpress/plugins
+
+          for plugin in *; do
             [ -d "$plugin" ] || continue
-            name=$(basename "$plugin")
-            if echo "${{ env.files }}" | grep -q "$plugin"; then
-              zip -r "deploy_build/plugins/${name}.zip" "$plugin" -x "*.git*" "*.github*" "*.DS_Store"
+
+            if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/plugins/$plugin"; then
+              echo "Zipping plugin: $plugin"
+
+              # cd into plugin folder and zip it with correct root
+              (cd "$plugin" && zip -r "../../../../deploy_build/plugins/${plugin}.zip" . -x "*.git*" "*.github*" "*.DS_Store")
             fi
           done
 
+      # ---------------------------------------
+      # ZIP THEMES (correct folder structure)
+      # ---------------------------------------
       - name: Detect & package changed themes
         run: |
           mkdir -p deploy_build/themes
-          for theme in vuedesigner/pg-wordpress/themes/*; do
+          cd vuedesigner/pg-wordpress/themes
+
+          for theme in *; do
             [ -d "$theme" ] || continue
-            name=$(basename "$theme")
-            if echo "${{ env.files }}" | grep -q "$theme"; then
-              zip -r "deploy_build/themes/${name}.zip" "$theme" -x "*.git*" "*.github*" "*.DS_Store"
+
+            if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/themes/$theme"; then
+              echo "Zipping theme: $theme"
+
+              # cd into theme folder and zip it with correct root
+              (cd "$theme" && zip -r "../../../../deploy_build/themes/${theme}.zip" . -x "*.git*" "*.github*" "*.DS_Store")
             fi
           done
 
@@ -65,7 +81,8 @@ jobs:
         if: env.NO_ZIPS == 'true'
         run: echo "No deployment needed."
 
-      - name: Upload ZIPs (nested)
+      # Upload ZIPs (nested)
+      - name: Upload ZIPs
         if: env.NO_ZIPS == 'false'
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -76,6 +93,9 @@ jobs:
           source: 'deploy_build/**/*'
           target: '/home/${{ secrets.SSH_USER }}/deploy'
 
+      # ----------------------------------------------------
+      # DEPLOY (Flatten ZIPs, Unzip Correctly, Activate)
+      # ----------------------------------------------------
       - name: Deploy on server (flatten + apply)
         if: env.NO_ZIPS == 'false'
         uses: appleboy/ssh-action@v0.1.7
@@ -90,7 +110,6 @@ jobs:
             WP_DIR="/home/${{ secrets.SSH_USER }}/${{ secrets.WP_PATH }}/wp-content"
 
             echo "Flattening upload structure..."
-
             mkdir -p "$DEPLOY_DIR/plugins"
             mkdir -p "$DEPLOY_DIR/themes"
 
@@ -124,6 +143,7 @@ jobs:
             rm "$DEPLOY_DIR"/plugins/*.zip 2>/dev/null || true
             rm "$DEPLOY_DIR"/themes/*.zip 2>/dev/null || true
 
+      # GitHub Release
       - name: Create GitHub Release
         if: env.NO_ZIPS == 'false'
         uses: softprops/action-gh-release@v2
@@ -131,6 +151,6 @@ jobs:
           tag_name: ${{ env.VERSION }}
           name: 'Release ${{ env.VERSION }}'
           body: |
-            Deployment successful.
+            Deployment successful with v10 (correct ZIP root).
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
