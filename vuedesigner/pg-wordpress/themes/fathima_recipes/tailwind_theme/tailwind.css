@@ -1004,6 +1004,9 @@ nav:where(.admin-bar *){
 .items-center{
   align-items: center;
 }
+.justify-start{
+  justify-content: flex-start;
+}
 .justify-end{
   justify-content: flex-end;
 }
@@ -1081,6 +1084,9 @@ nav:where(.admin-bar *){
 .py-3{
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+.text-left{
+  text-align: left;
 }
 .text-right{
   text-align: right;
