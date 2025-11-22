@@ -131,28 +131,57 @@ current -> releases/<timestamp>
 
 ---
 
-# 📦 5. Hostinger Server Folder Structure After Deployment
+# 📦 5. Hostinger Deployment and Folder Structure
 
-### Plugins
+## 🎨 Theme Deployment (Zero Downtime)
+
+Themes use a **release system**:
 
 ```
-/home/u865414922/domains/admin.fathimarecipes.com/public_html/wp-content/plugins/<plugin>/
+wp-content/themes/<theme>/
   releases/
-    20250101-101500/
-    20250105-222210/
-    20250107-130101/
-  current → releases/20250107-130101
+    <timestamp>/
+  current → releases/<timestamp>
 ```
 
-### Themes
+Deployment steps:
+
+1. Create release folder
+2. Unzip theme contents into release
+3. Update `current` symlink
+4. Activate theme automatically
+5. Delete older releases (keep last 5)
+
+This allows:
+
+- No downtime
+- Atomic rollbacks
+- Hot-swapping theme versions safely
+
+---
+
+## 🔧 Plugin Deployment (Direct Overwrite — WP‑Compatible)
+
+Plugins **cannot** use release/symlink structures.  
+WordPress plugin loader requires:
 
 ```
-/home/u865414922/domains/admin.fathimarecipes.com/public_html/wp-content/themes/<theme>/
-  releases/
-    20250101-101500/
-    20250105-222210/
-    20250107-130101/
-  current → releases/20250107-130101
+wp-content/plugins/<plugin>/<main-plugin-file>.php
+```
+
+So plugins use a safe overwrite strategy:
+
+1. Remove plugin folder
+2. Recreate plugin folder
+3. Unzip contents directly into it
+4. Auto-activate the plugin
+
+Final structure:
+
+```
+wp-content/plugins/pg-auto-synced-patterns/
+    pg-auto-synced-patterns.php
+    ...
 ```
 
 ---
