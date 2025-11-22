@@ -30,9 +30,9 @@ export default {
     ],
     secondary: [
       {
-        title: 'About Us',
+        title: 'About Me',
         icon: 'i-mdi-home',
-        to: '/about-us',
+        to: '/about-me',
       },
     ],
   },

@@ -539,6 +539,9 @@ nav:where(.admin-bar *){
 .items-center{
   align-items: center;
 }
+.justify-start{
+  justify-content: flex-start;
+}
 .justify-end{
   justify-content: flex-end;
 }
@@ -617,8 +620,17 @@ nav:where(.admin-bar *){
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
+.text-left{
+  text-align: left;
+}
+.text-center{
+  text-align: center;
+}
 .text-right{
   text-align: right;
+}
+.text-justify{
+  text-align: justify;
 }
 .font-sans{
   font-family: 'Proza Libre', sans-serif;
