@@ -8,7 +8,8 @@
     "url": "https://github.com/pinegrow/fathimarecipes-with-iles-tailwindcss.git"
   },
   "scripts": {
-    "dev": "iles dev",
+    "dev": "npm-run-all --serial remote:tw:cls dev-only",
+    "dev-only": "iles dev",
     "now": "npm run build && npm run preview",
     "lighthouse": "npx unlighthouse --no-cache --site https://fathimarecipes-with-iles-tailwindcss.netlify.app",
     "build": "npm-run-all --serial remote:tw:cls build-only",

@@ -8,6 +8,7 @@ import { fontUrls } from '@/utils/font'
 
 import checkDarkTheme from '@/composables/dark-color-scheme-check?raw'
 import type { Script } from '@unhead/schema'
+import pgInteractions from '@/composables/interactions?raw'
 type TurboScript = Script & { once: true }
 
 export const useHeadAndMeta = (pageMeta: any) => {
@@ -93,7 +94,13 @@ export const useHeadAndMeta = (pageMeta: any) => {
     ],
 
     // useScript can also be used to load scripts
-    script: [{ innerHTML: checkDarkTheme, once: true } as TurboScript],
+    script: [
+      { innerHTML: checkDarkTheme, once: true } as TurboScript,
+      {
+        innerHTML: pgInteractions,
+      } as TurboScript,
+      { src: 'pgia/lib/pgia.js', tagPosition: 'bodyClose' },
+    ],
     link,
     noscript,
     htmlAttrs: { lang: 'en-US' },
