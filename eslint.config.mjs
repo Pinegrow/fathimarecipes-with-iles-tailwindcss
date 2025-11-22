@@ -28,7 +28,7 @@ export default createConfigForNuxt(
     },
   },
   {
-    ignores: ['**/public/', '**/vuedesigner/'],
+    ignores: ['**/public/'],
   },
   // {
   //   ...

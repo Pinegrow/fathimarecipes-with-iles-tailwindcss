@@ -3,7 +3,7 @@
 import { kebabCase, camelCase, upperFirst, omit } from './index'
 import type { Config as TWConfig } from 'tailwindcss'
 import defaultColors from 'tailwindcss/colors.js'
-import { pg_colors } from '../../vuedesigner/pg-tailwindcss/themes/tokens.mjs'
+import { pg_colors } from '../../themes/pg-tailwindcss/tokens.mjs'
 // @ts-ignore
 delete defaultColors.lightBlue
 // @ts-ignore
