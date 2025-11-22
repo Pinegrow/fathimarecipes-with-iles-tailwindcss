@@ -4,7 +4,8 @@
         <div class="py-20 sm:py-24 lg:py-32">
             <div class="max-w-3xl">
                 <div class="backdrop-blur bg-white/80 p-6 ring-1 ring-white/50 rounded-xl shadow-lg sm:p-8 lg:p-10">
-                    <span class="gap-2 inline-flex items-center ml-auto text-gray-700 text-sm sm:text-base"> <span class="inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span> <span><?php echo PG_Blocks_v4::getAttribute( $args, 'badge_text' ) ?></span> </span>
+                    <div class="flex gap-2 items-center justify-end ml-auto text-gray-700 text-sm w-full sm:text-base"> <span class="inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span> <span><?php echo PG_Blocks_v4::getAttribute( $args, 'badge_text' ) ?></span> 
+                    </div>
                     <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-gray-900 text-right"><?php echo PG_Blocks_v4::getAttribute( $args, 'main_heading' ) ?></h1>
                     <p class="mt-4 text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed text-right"><?php echo PG_Blocks_v4::getAttribute( $args, 'description' ) ?></p>
                     <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
