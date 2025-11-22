@@ -1,4 +1,4 @@
-name: Deploy WordPress Plugins & Themes (v5)
+name: Deploy WordPress Plugins & Themes (v6)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Full Deployment Pipeline (v5)
+    name: Full Deployment Pipeline (v6)
     runs-on: ubuntu-latest
 
     steps:
@@ -44,40 +44,38 @@ jobs:
           git diff --name-only HEAD~1 HEAD || true
 
       # ---------------------------------------------------------
-      # 5. Detect changed plugins
+      # 5. Detect + package plugins (ZIP from repo root)
       # ---------------------------------------------------------
-      - name: Detect changed plugins
-        id: detect_plugins
+      - name: Detect & package changed plugins
         run: |
           mkdir -p vuedesigner/pg-wordpress/deploy_build/plugins
-          cd vuedesigner/pg-wordpress/plugins
 
-          for plugin in */; do
-            plugin_name="${plugin%/}"
+          for plugin in vuedesigner/pg-wordpress/plugins/*; do
+            [ -d "$plugin" ] || continue
+            plugin_name=$(basename "$plugin")
+
             if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/plugins/$plugin_name"; then
               echo "📦 Packaging plugin: $plugin_name"
-              cd "$plugin_name"
-              zip -r "../../../deploy_build/plugins/${plugin_name}.zip" . -x "*.git*" "*.github*" "*.DS_Store"
-              cd ..
+              zip -r "vuedesigner/pg-wordpress/deploy_build/plugins/${plugin_name}.zip" \
+                "$plugin" -x "*.git*" "*.github*" "*.DS_Store"
             fi
           done
 
       # ---------------------------------------------------------
-      # 6. Detect changed themes
+      # 6. Detect + package themes (ZIP from repo root)
       # ---------------------------------------------------------
-      - name: Detect changed themes
-        id: detect_themes
+      - name: Detect & package changed themes
         run: |
           mkdir -p vuedesigner/pg-wordpress/deploy_build/themes
-          cd vuedesigner/pg-wordpress/themes
 
-          for theme in */; do
-            theme_name="${theme%/}"
+          for theme in vuedesigner/pg-wordpress/themes/*; do
+            [ -d "$theme" ] || continue
+            theme_name=$(basename "$theme")
+
             if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/themes/$theme_name"; then
               echo "🎨 Packaging theme: $theme_name"
-              cd "$theme_name"
-              zip -r "../../../deploy_build/themes/${theme_name}.zip" . -x "*.git*" "*.github*" "*.DS_Store"
-              cd ..
+              zip -r "vuedesigner/pg-wordpress/deploy_build/themes/${theme_name}.zip" \
+                "$theme" -x "*.git*" "*.github*" "*.DS_Store"
             fi
           done
 
@@ -152,6 +150,7 @@ jobs:
               ln -sfn "$RELEASE_PATH" "$PLUGIN_DIR/current"
 
               wp plugin activate "$plugin" --allow-root || true
+
               ls -dt $PLUGIN_DIR/releases/* | tail -n +6 | xargs rm -rf || true
             done
 
@@ -173,6 +172,7 @@ jobs:
               ln -sfn "$RELEASE_PATH" "$THEME_DIR/current"
 
               wp theme activate "$theme" --allow-root || true
+
               ls -dt $THEME_DIR/releases/* | tail -n +6 | xargs rm -rf || true
             done
 
@@ -183,7 +183,7 @@ jobs:
             echo "🎉 Deployment complete!"
 
       # ---------------------------------------------------------
-      # 10. GitHub Release (only when deployment happened)
+      # 10. Create GitHub Release (only when deployment happened)
       # ---------------------------------------------------------
       - name: Create GitHub Release
         if: env.NO_ZIPS == 'false'
