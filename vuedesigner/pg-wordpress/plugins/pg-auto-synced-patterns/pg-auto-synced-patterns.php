@@ -1,134 +1,239 @@
 <?php
 /**
  * Plugin Name: Pinegrow Auto Synced Patterns (Headless Ready)
- * Description: Auto-creates editable synced patterns for Pinegrow dynamic blocks AND exposes them via REST API for headless front-ends. Automatically updates patterns when block defaults change without overwriting client customizations. Includes "Content Creator Admin" role restricted to Posts/Patterns/Media/Comments/Profile.
- * Version: 4.3
+ * Description: Auto-creates editable synced patterns for Pinegrow dynamic blocks AND exposes them via REST API for headless front-ends. Automatically updates patterns when block defaults change using a version field, without overwriting client customizations. Includes a "Content Creator Admin" role restricted to Posts/Patterns/Media/Comments/Profile with full Cloudinary removal. Patterns are marked unsynced so client edits persist.
+ * Version: 12.7
  */
 
+/**
+ * ---------------------------------------------------------
+ * 0. CREATE / SYNC "Content Creator Admin" ROLE
+ * ---------------------------------------------------------
+ * - Clones Administrator capabilities into role "content_creator_admin"
+ * - Keeps caps updated if Administrator gains new caps
+ */
+add_action('init', function () {
+  $admin = get_role('administrator');
+  if (!$admin) {
+    return;
+  }
 
+  $admin_caps = $admin->capabilities;
+
+  // Create role if it doesn't exist
+  if (!get_role('content_creator_admin')) {
+    add_role('content_creator_admin', 'Content Creator Admin', $admin_caps);
+  } else {
+    // Sync capabilities with Administrator (add any new caps)
+    $role = get_role('content_creator_admin');
+    if ($role) {
+      foreach ($admin_caps as $cap => $grant) {
+        if ($grant) {
+          $role->add_cap($cap);
+        }
+      }
+    }
+  }
+});
 
 
 /**
  * ---------------------------------------------------------
- * 1. MAKE SYNCED PATTERNS (wp_block) PUBLIC + REST VISIBLE
+ * 1. MAKE SYNCED PATTERNS (wp_block) PUBLIC + REST + UI
  * ---------------------------------------------------------
+ * - public = true              → wp_block is publicly visible
+ * - publicly_queryable = true  → can be queried on front-end
+ * - show_ui = true             → shows in WP Admin
+ * - show_in_menu = true        → adds to admin menu
+ * - show_in_rest = true        → exposes via REST API
+ * - rest_base = blocks         → /wp-json/wp/v2/blocks
+ * - map_meta_cap = true        → proper capability mapping
  */
 add_action('init', function () {
   global $wp_post_types;
 
-  if (isset($wp_post_types['wp_block'])) {
-    $wp_post_types['wp_block']->public = true;
-    $wp_post_types['wp_block']->publicly_queryable = true;
-    $wp_post_types['wp_block']->show_in_rest = true;
-    $wp_post_types['wp_block']->rest_base = 'blocks';
-    $wp_post_types['wp_block']->rest_controller_class = 'WP_REST_Posts_Controller';
+  if (!isset($wp_post_types['wp_block'])) {
+    return;
   }
+
+  $pt = $wp_post_types['wp_block'];
+
+  $pt->public = true;
+  $pt->publicly_queryable = true;
+  $pt->exclude_from_search = false;
+
+  $pt->show_ui = true;
+  $pt->show_in_menu = true;
+  $pt->show_in_admin_bar = true;
+  $pt->show_in_nav_menus = false;
+
+  $pt->show_in_rest = true;
+  if (empty($pt->rest_base)) {
+    $pt->rest_base = 'blocks';
+  }
+  if (empty($pt->rest_controller_class)) {
+    $pt->rest_controller_class = 'WP_REST_Posts_Controller';
+  }
+
+  $pt->map_meta_cap = true;
 }, 15);
-
-
 
 
 /**
  * ---------------------------------------------------------
- * 2. AUTO-GENERATE + AUTO-UPDATE SYNCED PATTERNS
+ * 2. AUTO-CREATE / VERSIONED-UPDATE PINEGROW PATTERNS
  * ---------------------------------------------------------
+ *
+ * - Looks at:  /theme/blocks/<slug>/<slug>_register.php
+ * - Uses 'version' from args (e.g. 'version' => '1.0.34')
+ * - If pattern doesn't exist → create it from defaults
+ * - If pattern exists and version changed → update it
+ *   · merges new defaults with client edits (client wins)
+ * - If version is unchanged → DO NOT TOUCH pattern
+ * - Marks patterns as "unsynced" so core/theme don't override edits
  */
 add_action('init', 'pg_auto_synced_patterns_init', 20);
 
 function pg_auto_synced_patterns_init()
 {
-
   $blocks_dir = get_stylesheet_directory() . '/blocks/';
-  if (!is_dir($blocks_dir))
+  if (!is_dir($blocks_dir)) {
     return;
+  }
 
   $folders = array_filter(glob($blocks_dir . '*'), 'is_dir');
+  if (empty($folders)) {
+    return;
+  }
 
   foreach ($folders as $folder) {
-
     $slug = basename($folder);
     $register_file = $folder . '/' . $slug . '_register.php';
 
-    if (!file_exists($register_file))
+    if (!file_exists($register_file)) {
       continue;
+    }
 
     $args = pg_parse_pinegrow_register_file($register_file);
-    if (!$args || !is_array($args) || empty($args['name']))
+    if (!$args || !is_array($args) || empty($args['name'])) {
       continue;
+    }
 
-    $block_name = $args['name'];
-    $title = isset($args['title']) ? wp_strip_all_tags($args['title']) : ucfirst($slug);
-    $attributes = isset($args['attributes']) && is_array($args['attributes'])
-      ? $args['attributes']
-      : [];
+    $block_name = $args['name']; // e.g. garden-mate/hero-seasonal
+    $title = !empty($args['title']) ? wp_strip_all_tags($args['title']) : ucfirst($slug);
+    $attributes = isset($args['attributes']) && is_array($args['attributes']) ? $args['attributes'] : [];
+    $block_version = !empty($args['version']) ? (string) $args['version'] : '';
 
-    // Extract default attributes
+    // Extract default attributes from Pinegrow attributes config
     $default_attrs = [];
-    foreach ($attributes as $attr_name => $config) {
+    foreach ($attributes as $key => $config) {
       if (is_array($config) && array_key_exists('default', $config)) {
-        $default_attrs[$attr_name] = $config['default'];
+        $default_attrs[$key] = $config['default'];
       }
     }
 
     // Look for existing pattern
     $existing = get_page_by_path($slug, OBJECT, 'wp_block');
 
+    // --------------------------------------------
+    // A. UPDATE EXISTING PATTERN (IF VERSION BUMPED)
+    // --------------------------------------------
     if ($existing) {
-      $old_json = pg_extract_attributes_from_block_comment($existing->post_content);
-      if (!is_array($old_json))
-        $old_json = [];
 
-      // Merge defaults → user edits win
+      // If no version defined, never auto-update (keep client edits safe)
+      if ($block_version === '') {
+        continue;
+      }
+
+      $stored_version = get_post_meta($existing->ID, '_pg_synced_version', true);
+
+      // Version unchanged → skip (do not overwrite client edits)
+      if ($stored_version === $block_version) {
+        continue;
+      }
+
+      // Version changed → update based on new defaults + current client edits
+      $old_json = pg_extract_attributes_from_block_comment($existing->post_content);
+      if (!is_array($old_json)) {
+        $old_json = [];
+      }
+
+      // Merge: new defaults + client overrides (client wins on existing keys)
       $merged = array_merge($default_attrs, $old_json);
 
-      // Only update when needed
-      if ($merged !== $old_json) {
-        $new_content = "<!-- wp:$block_name " . json_encode($merged) . " /-->";
-        wp_update_post([
-          'ID' => $existing->ID,
-          'post_content' => $new_content,
-        ]);
-      }
+      $json = json_encode($merged);
+      $block_open = "<!-- wp:$block_name $json -->";
+      $block_close = "<!-- /wp:$block_name -->";
+      $content = $block_open . $block_close;
+
+      wp_update_post([
+        'ID' => $existing->ID,
+        'post_title' => $title,
+        'post_content' => $content,
+      ]);
+
+      // Mark as unsynced and record version
+      update_post_meta($existing->ID, '_wp_pattern_sync_status', 'unsynced');
+      delete_post_meta($existing->ID, '_wp_block_theme');
+      delete_post_meta($existing->ID, '_wp_pattern_source');
+      update_post_meta($existing->ID, '_pg_synced_version', $block_version);
+
       continue;
     }
 
-    // Create new pattern
-    $json = !empty($default_attrs) ? json_encode($default_attrs) : '';
-    $content = "<!-- wp:$block_name $json /-->";
+    // ----------------------------------
+    // B. CREATE NEW PATTERN (FIRST TIME)
+    // ----------------------------------
+    $json = json_encode($default_attrs);
+    $block_open = "<!-- wp:$block_name $json -->";
+    $block_close = "<!-- /wp:$block_name -->";
+    $content = $block_open . $block_close;
 
-    wp_insert_post([
+    $pattern_id = wp_insert_post([
       'post_title' => $title,
       'post_name' => $slug,
       'post_type' => 'wp_block',
       'post_status' => 'publish',
       'post_content' => $content,
     ]);
+
+    if ($pattern_id && !is_wp_error($pattern_id)) {
+      update_post_meta($pattern_id, '_wp_pattern_sync_status', 'unsynced');
+      delete_post_meta($pattern_id, '_wp_block_theme');
+      delete_post_meta($pattern_id, '_wp_pattern_source');
+
+      if ($block_version !== '') {
+        update_post_meta($pattern_id, '_pg_synced_version', $block_version);
+      }
+    }
   }
 }
-
-
 
 
 /**
  * ---------------------------------------------------------
  * 3. PARSE PINEGROW REGISTER FILE SAFELY
  * ---------------------------------------------------------
+ * Parses the args array from:
+ *   PG_Blocks_v4::register_block_type( array( ... ) );
  */
 function pg_parse_pinegrow_register_file($file_path)
 {
-
   $php = file_get_contents($file_path);
-  if ($php === false)
+  if ($php === false) {
     return null;
+  }
 
   $needle = 'PG_Blocks_v4::register_block_type';
   $pos = strpos($php, $needle);
-  if ($pos === false)
+  if ($pos === false) {
     return null;
+  }
 
   $pos = strpos($php, '(', $pos);
-  if ($pos === false)
+  if ($pos === false) {
     return null;
+  }
 
   $len = strlen($php);
   $depth = 0;
@@ -140,8 +245,9 @@ function pg_parse_pinegrow_register_file($file_path)
 
     if ($ch === '(') {
       $depth++;
-      if ($depth === 1)
+      if ($depth === 1) {
         $start = $i + 1;
+      }
     } elseif ($ch === ')') {
       $depth--;
       if ($depth === 0) {
@@ -151,17 +257,17 @@ function pg_parse_pinegrow_register_file($file_path)
     }
   }
 
-  if ($start === null || $end === null)
+  if ($start === null || $end === null) {
     return null;
+  }
 
   $inner = trim(substr($php, $start, $end - $start));
-  if (stripos($inner, 'array') !== 0)
+  if (stripos($inner, 'array') !== 0) {
     return null;
-
-  $code = 'return ' . $inner . ';';
+  }
 
   try {
-    return eval ($code);
+    return eval ('return ' . $inner . ';');
   } catch (\Throwable $e) {
     error_log('Pattern parse error in ' . $file_path . ': ' . $e->getMessage());
     return null;
@@ -169,105 +275,113 @@ function pg_parse_pinegrow_register_file($file_path)
 }
 
 
-
-
 /**
  * ---------------------------------------------------------
  * 4. EXTRACT ATTRIBUTES FROM BLOCK COMMENT
  * ---------------------------------------------------------
+ * Supports both:
+ *   <!-- wp:ns/block {"a":"b"} /-->
+ *   <!-- wp:ns/block {"a":"b"} --> ... <!-- /wp:ns/block -->
  */
 function pg_extract_attributes_from_block_comment($content)
 {
-  if (preg_match('/<!--\s*wp:[^ ]+\s+({.*?})\s*\/-->/s', $content, $m)) {
+  if (preg_match('/<!--\s*wp:[^ ]]+\s+({.*?})\s*(?:\/)?-->/', $content, $m)) {
     $json = json_decode($m[1], true);
     return is_array($json) ? $json : [];
   }
+
   return [];
 }
 
 
-
-
 /**
  * ---------------------------------------------------------
- * 5. CREATE "Content Creator Admin" ROLE (Clone of Admin)
+ * 5. ADD PATTERNS & PROFILE SHORTCUTS TO ADMIN MENU
  * ---------------------------------------------------------
- */
-add_action('init', function () {
-
-  if (!get_role('content_creator_admin')) {
-    $admin = get_role('administrator');
-    if ($admin) {
-      add_role(
-        'content_creator_admin',
-        'Content Creator Admin',
-        $admin->capabilities
-      );
-    }
-  }
-});
-
-
-
-
-/**
- * ---------------------------------------------------------
- * 6. LIMIT MENUS FOR CONTENT CREATOR ADMIN
- * ---------------------------------------------------------
+ * - Adds a top-level "Patterns" menu (wp_block)
+ * - Adds a top-level "Profile" menu
  */
 add_action('admin_menu', function () {
+  // Patterns top-level
+  if (current_user_can('edit_posts')) {
+    add_menu_page(
+      'Patterns',
+      'Patterns',
+      'edit_posts',
+      'edit.php?post_type=wp_block',
+      '',
+      'dashicons-layout',
+      21
+    );
+  }
 
-  /**
-   * ---------------------------------------------------------
-   * Add Patterns menu (must be added manually)
-   * ---------------------------------------------------------
-   */
-  add_menu_page(
-    'Patterns',
-    'Patterns',
-    'edit_posts',
-    'edit.php?post_type=wp_block',
-    '',
-    'dashicons-layout',
-    21
-  );
+  // Direct Profile
+  if (current_user_can('read')) {
+    add_menu_page(
+      'Profile',
+      'Profile',
+      'read',
+      'profile.php',
+      '',
+      'dashicons-admin-users',
+      80
+    );
+  }
+}, 20);
 
-  if (!current_user_can('content_creator_admin'))
+
+/**
+ * ---------------------------------------------------------
+ * 6. LIMIT MENUS FOR CONTENT CREATOR ADMIN (Option A)
+ * ---------------------------------------------------------
+ * For users with role "content_creator_admin", only show:
+ * - Dashboard
+ * - Posts
+ * - Media
+ * - Comments
+ * - Patterns (wp_block)
+ * - Profile
+ * Everything else is hidden.
+ * Also includes FULL Cloudinary removal.
+ */
+add_action('admin_menu', function () {
+  $user = wp_get_current_user();
+  if (!$user || !in_array('content_creator_admin', (array) $user->roles, true)) {
     return;
-
-  // Remove core admin menus
-  remove_menu_page('index.php');                 // Dashboard
-  remove_menu_page('edit.php?post_type=page');  // Pages
-  remove_menu_page('themes.php');               // Appearance
-  remove_menu_page('plugins.php');              // Plugins
-  remove_menu_page('users.php');                // Users
-  remove_menu_page('tools.php');                // Tools
-  remove_menu_page('options-general.php');      // Settings
-  remove_menu_page('woocommerce');              // WooCommerce
-  remove_menu_page('edit.php?post_type=product'); // Products
-
-
-
-
-  /**
-   * ---------------------------------------------------------
-   * CLOUDINARY REMOVAL — FULL + GUARANTEED (ALL VERSIONS)
-   * ---------------------------------------------------------
-   */
+  }
 
   global $menu, $submenu;
 
-  // Remove any top-level menu containing the text "Cloudinary"
+  // Allow only these slugs
+  $allowed = [
+    'index.php',                   // Dashboard
+    'edit.php',                    // Posts
+    'upload.php',                  // Media
+    'edit-comments.php',           // Comments
+    'edit.php?post_type=wp_block', // Patterns
+    'profile.php',                 // Profile
+  ];
+
+  // Remove any top-level menu not in allowed or that mentions Cloudinary
   foreach ($menu as $index => $item) {
-    if (isset($item[0]) && stripos($item[0], 'cloudinary') !== false) {
-      unset($menu[$index]);
+    $slug = $item[2] ?? '';
+    $label = wp_strip_all_tags($item[0] ?? '');
+
+    // Cloudinary removal by label
+    if ($label && stripos($label, 'cloudinary') !== false) {
+      remove_menu_page($slug);
+      continue;
+    }
+
+    if (!in_array($slug, $allowed, true)) {
+      remove_menu_page($slug);
     }
   }
 
-  // Remove any submenu containing the text "Cloudinary"
+  // Remove any submenu containing "Cloudinary" in the label
   if (is_array($submenu)) {
-    foreach ($submenu as $parent_slug => $sub_items) {
-      foreach ($sub_items as $i => $sub_item) {
+    foreach ($submenu as $parent_slug => $items) {
+      foreach ($items as $i => $sub_item) {
         if (isset($sub_item[0]) && stripos($sub_item[0], 'cloudinary') !== false) {
           unset($submenu[$parent_slug][$i]);
         }
@@ -275,7 +389,7 @@ add_action('admin_menu', function () {
     }
   }
 
-  // Remove by known Cloudinary slugs (covers multiple plugin versions)
+  // Remove by known Cloudinary slugs (covers multiple versions)
   $cloudinary_slugs = [
     'cloudinary',
     'cloudinary-settings',
@@ -294,24 +408,19 @@ add_action('admin_menu', function () {
     remove_submenu_page('options-general.php', $slug);
     remove_submenu_page('tools.php', $slug);
   }
-
-
-
-
-
 }, 999);
-
-
 
 
 /**
  * ---------------------------------------------------------
- * 7. CLEAN UP SUBMENUS (Appearance, Editor, FSE, etc.)
+ * 7. CLEAN UP APPEARANCE SUBMENUS FOR CONTENT CREATOR ADMIN
  * ---------------------------------------------------------
  */
 add_action('admin_init', function () {
-  if (!current_user_can('content_creator_admin'))
+  $user = wp_get_current_user();
+  if (!$user || !in_array('content_creator_admin', (array) $user->roles, true)) {
     return;
+  }
 
   remove_submenu_page('themes.php', 'nav-menus.php');
   remove_submenu_page('themes.php', 'theme-editor.php');
@@ -320,15 +429,16 @@ add_action('admin_init', function () {
 });
 
 
-
-
 /**
  * ---------------------------------------------------------
- * 8. ALLOW PROFILE ONLY (Hide Users List)
+ * 8. HIDE USERS LIST FOR CONTENT CREATOR ADMIN (Profile Only)
  * ---------------------------------------------------------
  */
 add_action('admin_menu', function () {
-  if (current_user_can('content_creator_admin')) {
-    remove_menu_page('users.php');
+  $user = wp_get_current_user();
+  if (!$user || !in_array('content_creator_admin', (array) $user->roles, true)) {
+    return;
   }
+
+  remove_menu_page('users.php');
 }, 999);
