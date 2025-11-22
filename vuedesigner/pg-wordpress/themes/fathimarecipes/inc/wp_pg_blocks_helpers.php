@@ -9,6 +9,8 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  *
  */
+?><?php
+
 
 if(! class_exists( 'PG_Blocks_v4' )) {
     class PG_Blocks_v4

@@ -1,4 +1,18 @@
 <?php
+$pinegrow_run_code = true;
+
+/* Begin - Prevent broken project from crashing the Pinegrow editor */
+if(defined('DOING_AJAX') && DOING_AJAX && !empty($_REQUEST['action']) && strpos($_REQUEST['action'], 'pinegrow_api') === 0) {
+    $pinegrow_run_code = false; //do not run during Pinegrow API calls
+}
+if(strpos($_SERVER['REQUEST_URI'], '/wp-admin/admin.php?page=pinegrow-projects') === 0 || strpos($_SERVER['REQUEST_URI'], '/wp-login') === 0 || (strpos($_SERVER['REQUEST_URI'], '/wp-admin/plugins.php') === 0 && strpos($_SERVER['REQUEST_URI'], '/wp-admin/plugins.php?action=activate') === false)) {
+    //do not load when editor is loading, during login and plugin manipulation in admin, except when plugin is being activated
+    $pinegrow_run_code = false;
+}
+if( $pinegrow_run_code ) :
+
+/* End - Prevent broken project from crashing the Pinegrow editor */            
+?><?php
 if ( ! function_exists( 'fathima_recipes_setup' ) ) :
 
 function fathima_recipes_setup() {
@@ -157,10 +171,10 @@ if ( ! function_exists( 'fathima_recipes_enqueue_scripts' ) ) :
         /* Pinegrow generated Enqueue Styles Begin */
 
     wp_deregister_style( 'fathima_recipes-tailwind' );
-    wp_enqueue_style( 'fathima_recipes-tailwind', get_template_directory_uri() . '/tailwind_theme/tailwind.css', [], '1.0.17', 'all');
+    wp_enqueue_style( 'fathima_recipes-tailwind', get_template_directory_uri() . '/tailwind_theme/tailwind.css', [], '1.0.2', 'all');
 
     wp_deregister_style( 'fathima_recipes-style' );
-    wp_enqueue_style( 'fathima_recipes-style', get_bloginfo('stylesheet_url'), [], '1.0.17', 'all');
+    wp_enqueue_style( 'fathima_recipes-style', get_bloginfo('stylesheet_url'), [], '1.0.2', 'all');
 
     /* Pinegrow generated Enqueue Styles End */
 
@@ -248,4 +262,5 @@ add_action( version_compare('5.8', get_bloginfo('version'), '<=' ) ? 'block_cate
 
 /* End of registering Blocks Categories */
 
-?>
+?><?php
+endif; //end if ( $pinegrow_run_plugin )

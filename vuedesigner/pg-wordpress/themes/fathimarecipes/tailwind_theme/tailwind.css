@@ -937,17 +937,8 @@ nav:where(.admin-bar *){
 .inset-0{
   inset: 0px;
 }
-.right-auto{
-  right: auto;
-}
 .mx-auto{
   margin-left: auto;
-  margin-right: auto;
-}
-.ml-auto{
-  margin-left: auto;
-}
-.mr-auto{
   margin-right: auto;
 }
 .mt-3{
@@ -998,17 +989,11 @@ nav:where(.admin-bar *){
 .flex-col{
   flex-direction: column;
 }
-.items-end{
-  align-items: flex-end;
-}
 .items-center{
   align-items: center;
 }
 .justify-start{
   justify-content: flex-start;
-}
-.justify-end{
-  justify-content: flex-end;
 }
 .justify-center{
   justify-content: center;
@@ -1087,9 +1072,6 @@ nav:where(.admin-bar *){
 }
 .text-left{
   text-align: left;
-}
-.text-right{
-  text-align: right;
 }
 .font-sans{
   font-family: 'Proza Libre', sans-serif;
