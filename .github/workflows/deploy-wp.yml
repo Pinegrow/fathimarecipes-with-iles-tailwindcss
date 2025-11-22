@@ -1,4 +1,4 @@
-name: Deploy WordPress Plugins & Themes (v12)
+name: Deploy WordPress Plugins & Themes (v12.1)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Full Deployment Pipeline (v12 — plugin releases)
+    name: Full Deployment Pipeline (v12.1 — safer plugin & theme releases)
     runs-on: ubuntu-latest
 
     steps:
@@ -18,14 +18,17 @@ jobs:
       - name: Install zip
         run: sudo apt-get install zip -y
 
+      # Create timestamp version
       - name: Set version
         run: echo "VERSION=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
+      # Identify changed files
       - name: Identify changed files
         run: |
           echo "files<<EOF" >> $GITHUB_ENV
           git diff --name-only HEAD~1 HEAD >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+
           echo "Changed files:"
           git diff --name-only HEAD~1 HEAD || true
 
@@ -37,8 +40,10 @@ jobs:
           mkdir -p deploy_build/plugins
           cd vuedesigner/pg-wordpress/plugins
 
-          for plugin in *; do
-            [ -d "$plugin" ] || continue
+          shopt -s nullglob
+
+          for plugin in */; do
+            plugin="${plugin%/}"
             if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/plugins/$plugin"; then
               echo "Zipping plugin: $plugin"
               (cd "$plugin" && zip -r "../../../../deploy_build/plugins/${plugin}.zip" . -x "*.git*" "*.github*" "*.DS_Store")
@@ -53,8 +58,10 @@ jobs:
           mkdir -p deploy_build/themes
           cd vuedesigner/pg-wordpress/themes
 
-          for theme in *; do
-            [ -d "$theme" ] || continue
+          shopt -s nullglob
+
+          for theme in */; do
+            theme="${theme%/}"
             if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/themes/$theme"; then
               echo "Zipping theme: $theme"
               (cd "$theme" && zip -r "../../../../deploy_build/themes/${theme}.zip" . -x "*.git*" "*.github*" "*.DS_Store")
@@ -65,7 +72,12 @@ jobs:
         run: |
           count=$(find deploy_build -name "*.zip" | wc -l)
           echo "ZIP_COUNT=$count" >> $GITHUB_ENV
-          echo "NO_ZIPS=$([ $count -eq 0 ] && echo true || echo false)" >> $GITHUB_ENV
+          if [ "$count" -eq 0 ]; then
+            echo "NO_ZIPS=true" >> $GITHUB_ENV
+          else
+            echo "NO_ZIPS=false" >> $GITHUB_ENV
+          fi
+          echo "Found $count ZIP files."
 
       - name: Stop if nothing to deploy
         if: env.NO_ZIPS == 'true'
@@ -88,7 +100,7 @@ jobs:
       # -------------------------------
       # DEPLOY — FULL RELEASE SYSTEM
       # -------------------------------
-      - name: Deploy on server (v12)
+      - name: Deploy on server (v12.1)
         if: env.NO_ZIPS == 'false'
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -108,33 +120,41 @@ jobs:
 
             echo "=== Deploying PLUGIN RELEASES ==="
             cd "$DEPLOY_DIR/plugins" 2>/dev/null || :
+
+            shopt -s nullglob
+
             for file in *.zip; do
               plugin="${file%.zip}"
 
               RELEASE_DIR="$WP_DIR/plugins-releases/$plugin/$VERSION"
               PLUGIN_SYMLINK="$WP_DIR/plugins/$plugin"
 
-              mkdir -p "$RELEASE_DIR"
-              unzip "$file" -d "$RELEASE_DIR"
+              echo "→ Release: $plugin → $RELEASE_DIR"
 
-              # Symlink plugin folder itself (WP-compatible)
+              mkdir -p "$RELEASE_DIR"
+              unzip -qo "$file" -d "$RELEASE_DIR"
+
               rm -rf "$PLUGIN_SYMLINK"
               ln -sfn "$RELEASE_DIR" "$PLUGIN_SYMLINK"
 
               wp plugin activate "$plugin" --allow-root || true
 
-              # Keep last 5 releases
               ls -dt "$WP_DIR/plugins-releases/$plugin"/* | tail -n +6 | xargs rm -rf || true
             done
 
-            echo "=== Deploying THEMES (existing system) ==="
+            echo "=== Deploying THEMES ==="
             cd "$DEPLOY_DIR/themes" 2>/dev/null || :
+
+            shopt -s nullglob
+
             for file in *.zip; do
               theme="${file%.zip}"
               RELEASE_DIR="$WP_DIR/themes/$theme/releases/$VERSION"
 
+              echo "→ Release: $theme → $RELEASE_DIR"
+
               mkdir -p "$RELEASE_DIR"
-              unzip "$file" -d "$RELEASE_DIR"
+              unzip -qo "$file" -d "$RELEASE_DIR"
 
               ln -sfn "$RELEASE_DIR" "$WP_DIR/themes/$theme/current"
 
@@ -155,6 +175,6 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           name: 'Release ${{ env.VERSION }}'
-          body: 'Deployment completed using Workflow v12 (zero-downtime plugin & theme releases).'
+          body: 'Deployment completed using Workflow v12.1 (safer plugin & theme releases).'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
