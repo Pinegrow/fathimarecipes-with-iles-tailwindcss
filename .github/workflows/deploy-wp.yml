@@ -1,4 +1,4 @@
-name: Deploy WordPress Plugins & Themes (v6)
+name: Deploy WordPress Plugins & Themes (v7)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Full Deployment Pipeline (v6)
+    name: Full Deployment Pipeline (v7)
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +31,7 @@ jobs:
         run: echo "VERSION=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
       # ---------------------------------------------------------
-      # 4. Detect changed files (correct safe diff)
+      # 4. Detect changed files (safe diff HEAD~1 → HEAD)
       # ---------------------------------------------------------
       - name: Identify changed files
         id: diff
@@ -44,7 +44,7 @@ jobs:
           git diff --name-only HEAD~1 HEAD || true
 
       # ---------------------------------------------------------
-      # 5. Detect + package plugins (ZIP from repo root)
+      # 5. Detect & package plugins (ZIP from repo root)
       # ---------------------------------------------------------
       - name: Detect & package changed plugins
         run: |
@@ -62,7 +62,7 @@ jobs:
           done
 
       # ---------------------------------------------------------
-      # 6. Detect + package themes (ZIP from repo root)
+      # 6. Detect & package themes (ZIP from repo root)
       # ---------------------------------------------------------
       - name: Detect & package changed themes
         run: |
@@ -80,7 +80,7 @@ jobs:
           done
 
       # ---------------------------------------------------------
-      # 7. Skip deploy if NOTHING changed
+      # 7. Skip deploy if nothing changed
       # ---------------------------------------------------------
       - name: Check if ZIPs exist
         id: zip_check
@@ -101,7 +101,7 @@ jobs:
         run: echo "✔ Done. No deployment required."
 
       # ---------------------------------------------------------
-      # 8. Upload ZIPs (only if they exist)
+      # 8. Upload ZIPs to server
       # ---------------------------------------------------------
       - name: Upload ZIPs to server
         if: env.NO_ZIPS == 'false'
@@ -117,7 +117,7 @@ jobs:
       # ---------------------------------------------------------
       # 9. SSH: Zero-downtime deploy (with cleanup)
       # ---------------------------------------------------------
-      - name: Deploy on server
+      - name: Deploy on server (zero downtime)
         if: env.NO_ZIPS == 'false'
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -127,10 +127,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             VERSION=${{ env.VERSION }}
-            DEPLOY_DIR="/home/${{ secrets.SSH_USER }}/deploy"
+
+            # WordPress content directory
             WP_DIR="/home/${{ secrets.SSH_USER }}/${{ secrets.WP_PATH }}/wp-content"
+            DEPLOY_DIR="/home/${{ secrets.SSH_USER }}/deploy"
 
             echo "🚀 Deploying version $VERSION"
+            echo "📁 WP_DIR = $WP_DIR"
 
             #######################################################
             # Deploy Plugins
@@ -150,7 +153,6 @@ jobs:
               ln -sfn "$RELEASE_PATH" "$PLUGIN_DIR/current"
 
               wp plugin activate "$plugin" --allow-root || true
-
               ls -dt $PLUGIN_DIR/releases/* | tail -n +6 | xargs rm -rf || true
             done
 
@@ -172,7 +174,6 @@ jobs:
               ln -sfn "$RELEASE_PATH" "$THEME_DIR/current"
 
               wp theme activate "$theme" --allow-root || true
-
               ls -dt $THEME_DIR/releases/* | tail -n +6 | xargs rm -rf || true
             done
 
@@ -183,7 +184,7 @@ jobs:
             echo "🎉 Deployment complete!"
 
       # ---------------------------------------------------------
-      # 10. Create GitHub Release (only when deployment happened)
+      # 10. GitHub Release (only if deployment happened)
       # ---------------------------------------------------------
       - name: Create GitHub Release
         if: env.NO_ZIPS == 'false'
