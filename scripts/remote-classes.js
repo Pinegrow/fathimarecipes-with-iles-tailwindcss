@@ -1,5 +1,10 @@
 import fs from 'fs'
-const res = await fetch('https://admin.fathimarecipes.com/wp-json/wp/v2/blocks')
+import { loadEnv } from 'vite'
+
+// Load env from project root
+const env = loadEnv('', process.cwd())
+
+const res = await fetch(`${env.VITE_WORDPRESS_URL}/wp-json/wp/v2/blocks`)
 const json = await res.json()
 
 let markup = ''
