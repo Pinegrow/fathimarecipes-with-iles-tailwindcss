@@ -167,4 +167,36 @@
     </div>
   </div>
 </template>
-<style></style>
+<style>
+  html:not(.pg-ia-no-preview) [data-pg-ia-hide=''] {
+    opacity: 0;
+    visibility: hidden;
+  }
+  html:not(.pg-ia-no-preview) [data-pg-ia-show=''] {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+  }
+  @media (max-width: 767px) {
+    html:not(.pg-ia-no-preview) [data-pg-ia-hide='mobile'] {
+      opacity: 0;
+      visibility: hidden;
+    }
+    html:not(.pg-ia-no-preview) [data-pg-ia-show='mobile'] {
+      opacity: 1;
+      visibility: visible;
+      display: block;
+    }
+  }
+  @media (min-width: 768px) {
+    html:not(.pg-ia-no-preview) [data-pg-ia-hide='desktop'] {
+      opacity: 0;
+      visibility: hidden;
+    }
+    html:not(.pg-ia-no-preview) [data-pg-ia-show='desktop'] {
+      opacity: 1;
+      visibility: visible;
+      display: block;
+    }
+  }
+</style>
