@@ -1,4 +1,4 @@
-name: Deploy WordPress Plugins & Themes (v7)
+name: Deploy WordPress Plugins & Themes (v8)
 
 on:
   push:
@@ -6,104 +6,65 @@ on:
 
 jobs:
   deploy:
-    name: Full Deployment Pipeline (v7)
+    name: Full Deployment Pipeline (v8)
     runs-on: ubuntu-latest
 
     steps:
-      # ---------------------------------------------------------
-      # 1. Checkout repo (need last 2 commits for HEAD~1 diff)
-      # ---------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      # ---------------------------------------------------------
-      # 2. Install zip utility
-      # ---------------------------------------------------------
       - name: Install zip
         run: sudo apt-get install zip -y
 
-      # ---------------------------------------------------------
-      # 3. Generate timestamp version
-      # ---------------------------------------------------------
       - name: Set version
         run: echo "VERSION=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
-      # ---------------------------------------------------------
-      # 4. Detect changed files (safe diff HEAD~1 → HEAD)
-      # ---------------------------------------------------------
       - name: Identify changed files
-        id: diff
         run: |
           echo "files<<EOF" >> $GITHUB_ENV
           git diff --name-only HEAD~1 HEAD >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
-          echo "🔍 Changed files:"
           git diff --name-only HEAD~1 HEAD || true
 
-      # ---------------------------------------------------------
-      # 5. Detect & package plugins (ZIP from repo root)
-      # ---------------------------------------------------------
       - name: Detect & package changed plugins
         run: |
-          mkdir -p vuedesigner/pg-wordpress/deploy_build/plugins
-
+          mkdir -p deploy_build/plugins
           for plugin in vuedesigner/pg-wordpress/plugins/*; do
             [ -d "$plugin" ] || continue
-            plugin_name=$(basename "$plugin")
-
-            if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/plugins/$plugin_name"; then
-              echo "📦 Packaging plugin: $plugin_name"
-              zip -r "vuedesigner/pg-wordpress/deploy_build/plugins/${plugin_name}.zip" \
-                "$plugin" -x "*.git*" "*.github*" "*.DS_Store"
+            name=$(basename "$plugin")
+            if echo "${{ env.files }}" | grep -q "$plugin"; then
+              zip -r "deploy_build/plugins/${name}.zip" "$plugin" -x "*.git*" "*.github*" "*.DS_Store"
             fi
           done
 
-      # ---------------------------------------------------------
-      # 6. Detect & package themes (ZIP from repo root)
-      # ---------------------------------------------------------
       - name: Detect & package changed themes
         run: |
-          mkdir -p vuedesigner/pg-wordpress/deploy_build/themes
-
+          mkdir -p deploy_build/themes
           for theme in vuedesigner/pg-wordpress/themes/*; do
             [ -d "$theme" ] || continue
-            theme_name=$(basename "$theme")
-
-            if echo "${{ env.files }}" | grep -q "vuedesigner/pg-wordpress/themes/$theme_name"; then
-              echo "🎨 Packaging theme: $theme_name"
-              zip -r "vuedesigner/pg-wordpress/deploy_build/themes/${theme_name}.zip" \
-                "$theme" -x "*.git*" "*.github*" "*.DS_Store"
+            name=$(basename "$theme")
+            if echo "${{ env.files }}" | grep -q "$theme"; then
+              zip -r "deploy_build/themes/${name}.zip" "$theme" -x "*.git*" "*.github*" "*.DS_Store"
             fi
           done
 
-      # ---------------------------------------------------------
-      # 7. Skip deploy if nothing changed
-      # ---------------------------------------------------------
-      - name: Check if ZIPs exist
-        id: zip_check
+      - name: Count ZIPs
         run: |
-          count=$(find vuedesigner/pg-wordpress/deploy_build -name "*.zip" | wc -l)
+          count=$(find deploy_build -name "*.zip" | wc -l)
           echo "ZIP_COUNT=$count" >> $GITHUB_ENV
-          echo "📦 Zip files found: $count"
-
           if [ "$count" -eq 0 ]; then
             echo "NO_ZIPS=true" >> $GITHUB_ENV
-            echo "🟡 No plugin or theme changes. Skipping deployment."
           else
             echo "NO_ZIPS=false" >> $GITHUB_ENV
           fi
 
-      - name: Stop early if nothing to deploy
+      - name: Stop if nothing to deploy
         if: env.NO_ZIPS == 'true'
-        run: echo "✔ Done. No deployment required."
+        run: echo "No deployment needed."
 
-      # ---------------------------------------------------------
-      # 8. Upload ZIPs to server
-      # ---------------------------------------------------------
-      - name: Upload ZIPs to server
+      - name: Upload ZIPs (flat structure)
         if: env.NO_ZIPS == 'false'
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -111,13 +72,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
-          source: 'vuedesigner/pg-wordpress/deploy_build/**/*'
-          target: '/home/${{ secrets.SSH_USER }}/deploy/'
+          source: 'deploy_build/**/*'
+          target: '/home/${{ secrets.SSH_USER }}/deploy'
 
-      # ---------------------------------------------------------
-      # 9. SSH: Zero-downtime deploy (with cleanup)
-      # ---------------------------------------------------------
-      - name: Deploy on server (zero downtime)
+      - name: Deploy on server
         if: env.NO_ZIPS == 'false'
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -127,65 +85,36 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             VERSION=${{ env.VERSION }}
-
-            # WordPress content directory
-            WP_DIR="/home/${{ secrets.SSH_USER }}/${{ secrets.WP_PATH }}/wp-content"
             DEPLOY_DIR="/home/${{ secrets.SSH_USER }}/deploy"
+            WP_DIR="/home/${{ secrets.SSH_USER }}/${{ secrets.WP_PATH }}/wp-content"
 
-            echo "🚀 Deploying version $VERSION"
-            echo "📁 WP_DIR = $WP_DIR"
+            echo "Deploying version $VERSION"
 
-            #######################################################
-            # Deploy Plugins
-            #######################################################
-            cd "$DEPLOY_DIR/plugins" 2>/dev/null || exit 0
-
+            cd "$DEPLOY_DIR/plugins" 2>/dev/null || :
             for file in *.zip; do
               plugin="${file%.zip}"
-              echo "🔧 Deploying plugin: $plugin"
-
-              PLUGIN_DIR="$WP_DIR/plugins/$plugin"
-              RELEASE_PATH="$PLUGIN_DIR/releases/$VERSION"
-
-              mkdir -p "$RELEASE_PATH"
-              unzip "$file" -d "$RELEASE_PATH"
-
-              ln -sfn "$RELEASE_PATH" "$PLUGIN_DIR/current"
-
+              TARGET="$WP_DIR/plugins/$plugin/releases/$VERSION"
+              mkdir -p "$TARGET"
+              unzip "$file" -d "$TARGET"
+              ln -sfn "$TARGET" "$WP_DIR/plugins/$plugin/current"
               wp plugin activate "$plugin" --allow-root || true
-              ls -dt $PLUGIN_DIR/releases/* | tail -n +6 | xargs rm -rf || true
+              ls -dt "$WP_DIR/plugins/$plugin/releases"/* | tail -n +6 | xargs rm -rf || true
             done
 
-            #######################################################
-            # Deploy Themes
-            #######################################################
-            cd "$DEPLOY_DIR/themes" 2>/dev/null || exit 0
-
+            cd "$DEPLOY_DIR/themes" 2>/dev/null || :
             for file in *.zip; do
               theme="${file%.zip}"
-              echo "🎨 Deploying theme: $theme"
-
-              THEME_DIR="$WP_DIR/themes/$theme"
-              RELEASE_PATH="$THEME_DIR/releases/$VERSION"
-
-              mkdir -p "$RELEASE_PATH"
-              unzip "$file" -d "$RELEASE_PATH"
-
-              ln -sfn "$RELEASE_PATH" "$THEME_DIR/current"
-
+              TARGET="$WP_DIR/themes/$theme/releases/$VERSION"
+              mkdir -p "$TARGET"
+              unzip "$file" -d "$TARGET"
+              ln -sfn "$TARGET" "$WP_DIR/themes/$theme/current"
               wp theme activate "$theme" --allow-root || true
-              ls -dt $THEME_DIR/releases/* | tail -n +6 | xargs rm -rf || true
+              ls -dt "$WP_DIR/themes/$theme/releases"/* | tail -n +6 | xargs rm -rf || true
             done
 
-            echo "🧹 Cleaning temp ZIPs..."
             rm "$DEPLOY_DIR"/plugins/*.zip 2>/dev/null || true
             rm "$DEPLOY_DIR"/themes/*.zip 2>/dev/null || true
 
-            echo "🎉 Deployment complete!"
-
-      # ---------------------------------------------------------
-      # 10. GitHub Release (only if deployment happened)
-      # ---------------------------------------------------------
       - name: Create GitHub Release
         if: env.NO_ZIPS == 'false'
         uses: softprops/action-gh-release@v2
@@ -193,12 +122,6 @@ jobs:
           tag_name: ${{ env.VERSION }}
           name: 'Release ${{ env.VERSION }}'
           body: |
-            ## Automated Deployment Summary
-            **Version:** ${{ env.VERSION }}
-
-            ### 📦 Changed Files
-            ```
-            ${{ env.files }}
-            ```
+            Deployment successful.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
