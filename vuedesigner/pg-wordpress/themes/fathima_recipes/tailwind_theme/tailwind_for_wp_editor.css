@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Sora:100,200,300,400,500,600,700,800&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Proza+Libre:400,500,600,700,800|Sora:100,200,300,400,500,600,700,800&display=swap');
 
 
 
@@ -35,7 +35,7 @@ a {
         }                        
 
 html {
-  font-family: 'Sora', sans-serif;
+  font-family: 'Proza Libre', sans-serif;
 }                      
 
 body{
@@ -472,8 +472,17 @@ nav:where(.admin-bar *){
 .inset-0{
   inset: 0px;
 }
+.right-auto{
+  right: auto;
+}
 .mx-auto{
   margin-left: auto;
+  margin-right: auto;
+}
+.ml-auto{
+  margin-left: auto;
+}
+.mr-auto{
   margin-right: auto;
 }
 .mt-3{
@@ -512,6 +521,9 @@ nav:where(.admin-bar *){
 .w-8{
   width: 2rem;
 }
+.w-full{
+  width: 100%;
+}
 .max-w-3xl{
   max-width: 48rem;
 }
@@ -521,8 +533,14 @@ nav:where(.admin-bar *){
 .flex-col{
   flex-direction: column;
 }
+.items-end{
+  align-items: flex-end;
+}
 .items-center{
   align-items: center;
+}
+.justify-end{
+  justify-content: flex-end;
 }
 .justify-center{
   justify-content: center;
@@ -599,8 +617,11 @@ nav:where(.admin-bar *){
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
 }
+.text-right{
+  text-align: right;
+}
 .font-sans{
-  font-family: 'Sora', sans-serif;
+  font-family: 'Proza Libre', sans-serif;
 }
 .text-3xl{
   font-size: 1.875rem;

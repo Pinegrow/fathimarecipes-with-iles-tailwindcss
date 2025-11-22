@@ -634,14 +634,14 @@
         "typography": {
             "fontFamilies": [
                 {
+                    "fontFamily": "'Proza Libre', sans-serif",
+                    "name": "Proza Libre",
+                    "slug": "proza-libre"
+                },
+                {
                     "fontFamily": "'Sora', sans-serif",
                     "name": "Sora",
                     "slug": "sora"
-                },
-                {
-                    "fontFamily": "\"Palatino Linotype\", \"Book Antiqua\", Palatino, serif",
-                    "name": "\"Palatino Linotype\", \"Book Antiqua\", Palatino, serif",
-                    "slug": "palatino-linotype-book-antiqua-palatino-serif"
                 }
             ]
         }

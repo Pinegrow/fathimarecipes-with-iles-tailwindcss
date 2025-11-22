@@ -157,10 +157,10 @@ if ( ! function_exists( 'fathima_recipes_enqueue_scripts' ) ) :
         /* Pinegrow generated Enqueue Styles Begin */
 
     wp_deregister_style( 'fathima_recipes-tailwind' );
-    wp_enqueue_style( 'fathima_recipes-tailwind', get_template_directory_uri() . '/tailwind_theme/tailwind.css', [], '1.0.4', 'all');
+    wp_enqueue_style( 'fathima_recipes-tailwind', get_template_directory_uri() . '/tailwind_theme/tailwind.css', [], '1.0.13', 'all');
 
     wp_deregister_style( 'fathima_recipes-style' );
-    wp_enqueue_style( 'fathima_recipes-style', get_bloginfo('stylesheet_url'), [], '1.0.4', 'all');
+    wp_enqueue_style( 'fathima_recipes-style', get_bloginfo('stylesheet_url'), [], '1.0.13', 'all');
 
     /* Pinegrow generated Enqueue Styles End */
 
