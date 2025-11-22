@@ -6,11 +6,14 @@
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      // authorization: `Bearer ${import.meta.env.VITE_WORDPRESS_API_KEY}`,
     },
   })
+
+  const hero =
+    response.find((res: { slug: string }) => res.slug === 'hero') || null
 </script>
 <template>
-  <div v-if="response.length" v-html="response[0].content.rendered"></div>
+  <!-- <div v-if="response.length" v-html="response.find(res => res.slug='header').content.rendered"></div> -->
+  <div v-if="hero" id="hero" v-html="hero.content.rendered"></div>
 </template>
 <style scoped></style>
