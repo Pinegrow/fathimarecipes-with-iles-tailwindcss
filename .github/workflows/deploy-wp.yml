@@ -1,4 +1,4 @@
-name: Deploy WordPress Plugins & Themes (v8)
+name: Deploy WordPress Plugins & Themes (v9)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Full Deployment Pipeline (v8)
+    name: Full Deployment Pipeline (v9)
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,7 @@ jobs:
           echo "files<<EOF" >> $GITHUB_ENV
           git diff --name-only HEAD~1 HEAD >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+          echo "Changed files:"
           git diff --name-only HEAD~1 HEAD || true
 
       - name: Detect & package changed plugins
@@ -64,7 +65,7 @@ jobs:
         if: env.NO_ZIPS == 'true'
         run: echo "No deployment needed."
 
-      - name: Upload ZIPs (flat structure)
+      - name: Upload ZIPs (nested)
         if: env.NO_ZIPS == 'false'
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -75,7 +76,7 @@ jobs:
           source: 'deploy_build/**/*'
           target: '/home/${{ secrets.SSH_USER }}/deploy'
 
-      - name: Deploy on server
+      - name: Deploy on server (flatten + apply)
         if: env.NO_ZIPS == 'false'
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -88,8 +89,15 @@ jobs:
             DEPLOY_DIR="/home/${{ secrets.SSH_USER }}/deploy"
             WP_DIR="/home/${{ secrets.SSH_USER }}/${{ secrets.WP_PATH }}/wp-content"
 
-            echo "Deploying version $VERSION"
+            echo "Flattening upload structure..."
 
+            mkdir -p "$DEPLOY_DIR/plugins"
+            mkdir -p "$DEPLOY_DIR/themes"
+
+            mv "$DEPLOY_DIR"/deploy_build/plugins/*.zip "$DEPLOY_DIR/plugins/" 2>/dev/null || true
+            mv "$DEPLOY_DIR"/deploy_build/themes/*.zip "$DEPLOY_DIR/themes/" 2>/dev/null || true
+
+            echo "Deploying plugins..."
             cd "$DEPLOY_DIR/plugins" 2>/dev/null || :
             for file in *.zip; do
               plugin="${file%.zip}"
@@ -101,6 +109,7 @@ jobs:
               ls -dt "$WP_DIR/plugins/$plugin/releases"/* | tail -n +6 | xargs rm -rf || true
             done
 
+            echo "Deploying themes..."
             cd "$DEPLOY_DIR/themes" 2>/dev/null || :
             for file in *.zip; do
               theme="${file%.zip}"

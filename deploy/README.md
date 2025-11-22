@@ -108,8 +108,8 @@ Workflow v8 performs:
 4. Upload ZIPs into **flat Hostinger folders**:
 
 ```
-/home/<user>/deploy/plugins/*.zip
-/home/<user>/deploy/themes/*.zip
+/deploy/deploy_build/plugins/*.zip
+/deploy/deploy_build/themes/*.zip
 ```
 
 5. Deploy step extracts them into:
