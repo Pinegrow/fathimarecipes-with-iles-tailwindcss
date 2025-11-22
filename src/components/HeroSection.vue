@@ -12,6 +12,6 @@
   // console.log(response)
 </script>
 <template>
-    <div v-html="response[0].content.rendered"></div>
+  <div v-html="response[0].content.rendered"></div>
 </template>
 <style scoped></style>
