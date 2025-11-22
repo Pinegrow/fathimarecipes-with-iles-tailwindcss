@@ -333,3 +333,41 @@ add_action('admin_menu', function () {
   }
 }, 999);
 
+/**
+ * ---------------------------------------------------------
+ * 9. CACHE BUSTING FOR THEME + BLOCK ASSETS (filemtime)
+ * ---------------------------------------------------------
+ * Ensures the WordPress block editor iframe always loads
+ * fresh CSS/JS after Pinegrow exports. Prevents clients
+ * from seeing stale block markup / outdated pattern HTML.
+ *
+ * Automatically applies filemtime() to all enqueued CSS/JS.
+ */
+
+add_filter('style_loader_src', 'pg_auto_synced_patterns_cache_bust', 9999);
+add_filter('script_loader_src', 'pg_auto_synced_patterns_cache_bust', 9999);
+
+function pg_auto_synced_patterns_cache_bust($src)
+{
+  $parts = wp_parse_url($src);
+
+  if (empty($parts['path'])) {
+    return $src;
+  }
+
+  // Convert URL path to local filesystem path
+  $file_path = ABSPATH . ltrim($parts['path'], '/');
+
+  // Only bust cache for local files (ignore CDN/remote)
+  if (!file_exists($file_path)) {
+    return $src;
+  }
+
+  $mtime = filemtime($file_path);
+
+  // Strip existing version & add our timestamp version
+  $src = remove_query_arg('ver', $src);
+  $src = add_query_arg('ver', $mtime, $src);
+
+  return $src;
+}
