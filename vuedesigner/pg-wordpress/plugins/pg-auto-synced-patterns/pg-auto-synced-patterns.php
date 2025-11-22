@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Pinegrow Auto Synced Patterns (Headless Ready)
- * Description: Auto-creates editable synced patterns for Pinegrow dynamic blocks AND exposes them via REST API for headless front-ends. Automatically updates patterns when block defaults change without overwriting client customizations. Includes "Content Creator Admin" role restricted to Posts/Patterns/Media/Comments/Profile with full Cloudinary removal.
+ * Description: Auto-creates editable synced patterns for Pinegrow dynamic blocks AND exposes them via REST API for headless front-ends. Automatically updates patterns when block defaults change without overwriting client customizations. Includes "Content Creator Admin" role restricted to Posts/Patterns/Media/Comments/Profile.
  * Version: 4.3
  */
 
