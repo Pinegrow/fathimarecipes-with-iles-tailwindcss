@@ -2,7 +2,12 @@ import fs from 'fs'
 const res = await fetch('https://admin.fathimarecipes.com/wp-json/wp/v2/blocks')
 const json = await res.json()
 
-const markup = json.length ? json[0].content.rendered : ''
+let markup = ''
+for (const block of json) {
+  if (block.content && block.content.rendered) {
+    markup += block.content.rendered
+  }
+}
 
 function decode(str) {
   return str
