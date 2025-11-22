@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Pinegrow Auto Synced Patterns (Headless Ready)
- * Description: Auto-creates editable synced patterns for Pinegrow dynamic blocks AND exposes them via REST API for headless front-ends. Automatically updates patterns when block defaults change using a version field, without overwriting client customizations. Includes a "Content Creator Admin" role restricted to Posts/Patterns/Media/Comments/Profile with full Cloudinary removal. Patterns are marked unsynced so client edits persist.
- * Version: 12.7
+ * Description: Auto-creates editable synced patterns for Pinegrow dynamic blocks AND exposes them via REST API for headless front-ends. Automatically updates patterns when block defaults change using a version field, without overwriting client customizations. Includes a "Content Creator Admin" role restricted to Posts/Patterns/Media/Comments/Profile. Patterns are marked unsynced so client edits persist.
+ * Version: 12.8
  */
 
 /**
@@ -39,15 +39,17 @@ add_action('init', function () {
 
 /**
  * ---------------------------------------------------------
- * 1. MAKE SYNCED PATTERNS (wp_block) PUBLIC + REST + UI
+ * 1. MAKE SYNCED PATTERNS (wp_block) REST-VISIBLE + UI
  * ---------------------------------------------------------
- * - public = true              → wp_block is publicly visible
- * - publicly_queryable = true  → can be queried on front-end
- * - show_ui = true             → shows in WP Admin
- * - show_in_menu = true        → adds to admin menu
+ * This matches the safe, working configuration:
+ *
+ * - public = false             → not a front-end post type
+ * - publicly_queryable = false → not queryable by default
+ * - show_ui = true             → shows Patterns screen in admin
  * - show_in_rest = true        → exposes via REST API
  * - rest_base = blocks         → /wp-json/wp/v2/blocks
  * - map_meta_cap = true        → proper capability mapping
+ * - capability_type = wp_block → dedicated caps
  */
 add_action('init', function () {
   global $wp_post_types;
@@ -58,9 +60,9 @@ add_action('init', function () {
 
   $pt = $wp_post_types['wp_block'];
 
-  $pt->public = true;
-  $pt->publicly_queryable = true;
-  $pt->exclude_from_search = false;
+  // DO NOT make this a public post type; keep it internal but REST-visible.
+  $pt->public = false;
+  $pt->publicly_queryable = false;
 
   $pt->show_ui = true;
   $pt->show_in_menu = true;
@@ -76,7 +78,8 @@ add_action('init', function () {
   }
 
   $pt->map_meta_cap = true;
-}, 15);
+  $pt->capability_type = 'wp_block';
+}, 99);
 
 
 /**
@@ -285,7 +288,7 @@ function pg_parse_pinegrow_register_file($file_path)
  */
 function pg_extract_attributes_from_block_comment($content)
 {
-  if (preg_match('/<!--\s*wp:[^ ]]+\s+({.*?})\s*(?:\/)?-->/', $content, $m)) {
+  if (preg_match('/<!--\s*wp:[^ ]+\s+({.*?})\s*(?:\/)?-->/', $content, $m)) {
     $json = json_decode($m[1], true);
     return is_array($json) ? $json : [];
   }
