@@ -2,13 +2,16 @@
     <div class="absolute bg-black/40 inset-0"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="py-20 sm:py-24 lg:py-32">
-            <div class="max-w-3xl ml-auto">
-                <div class="bg-white/80 backdrop-blur rounded-xl shadow-lg ring-1 ring-white/50 p-6 sm:p-8 lg:p-10"><span class="inline-flex items-center gap-2 text-sm sm:text-base text-gray-700"> <span class="inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span> <span><?php echo PG_Blocks_v4::getAttribute( $args, 'badge_text' ) ?></span> </span>
-                    <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-gray-900"><?php echo PG_Blocks_v4::getAttribute( $args, 'main_heading' ) ?></h1>
-                    <p class="mt-4 text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed"><?php echo PG_Blocks_v4::getAttribute( $args, 'description' ) ?></p>
-                    <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4"><a href="<?php echo (!empty($_GET['context']) && $_GET['context'] === 'edit') ? 'javascript:void()' : PG_Blocks_v4::getLinkUrl( $args, 'primary_button_link' ) ?>" class="inline-flex items-center justify-center px-5 py-3 text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm text-sm sm:text-base"><?php echo PG_Blocks_v4::getAttribute( $args, 'primary_button_label' ) ?></a><a href="<?php echo (!empty($_GET['context']) && $_GET['context'] === 'edit') ? 'javascript:void()' : PG_Blocks_v4::getLinkUrl( $args, 'secondary_button_link' ) ?>" class="inline-flex items-center justify-center px-5 py-3 text-green-700 bg-white hover:bg-gray-50 rounded-md shadow-sm ring-1 ring-gray-200 text-sm sm:text-base"><?php echo PG_Blocks_v4::getAttribute( $args, 'secondary_button_label' ) ?></a>
+            <div class="max-w-3xl">
+                <div class="backdrop-blur bg-white/80 p-6 ring-1 ring-white/50 rounded-xl shadow-lg sm:p-8 lg:p-10">
+                    <span class="inline-flex items-center gap-2 text-sm sm:text-base text-gray-700 justify-end w-full"> <span class="inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span> <span><?php echo PG_Blocks_v4::getAttribute( $args, 'badge_text' ) ?></span> </span>
+                    <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-gray-900 text-right"><?php echo PG_Blocks_v4::getAttribute( $args, 'main_heading' ) ?></h1>
+                    <p class="mt-4 text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed text-right"><?php echo PG_Blocks_v4::getAttribute( $args, 'description' ) ?></p>
+                    <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
+                        <a href="<?php echo (!empty($_GET['context']) && $_GET['context'] === 'edit') ? 'javascript:void()' : PG_Blocks_v4::getLinkUrl( $args, 'primary_button_link' ) ?>" class="inline-flex items-center justify-center px-5 py-3 text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm text-sm sm:text-base"><?php echo PG_Blocks_v4::getAttribute( $args, 'primary_button_label' ) ?></a>
+                        <a href="<?php echo (!empty($_GET['context']) && $_GET['context'] === 'edit') ? 'javascript:void()' : PG_Blocks_v4::getLinkUrl( $args, 'secondary_button_link' ) ?>" class="inline-flex items-center justify-center px-5 py-3 text-green-700 bg-white hover:bg-gray-50 rounded-md shadow-sm ring-1 ring-gray-200 text-sm sm:text-base"><?php echo PG_Blocks_v4::getAttribute( $args, 'secondary_button_label' ) ?></a>
                     </div>
-                    <div class="mt-5 flex items-center gap-4">
+                    <div class="mt-5 flex items-center gap-4 justify-end">
                         <div class="flex -space-x-2">
                             <?php if ( !PG_Blocks_v4::getImageSVG( $args, 'avatar_image_1', false) && PG_Blocks_v4::getImageUrl( $args, 'avatar_image_1', 'full' ) ) : ?>
                                 <img src="<?php echo PG_Blocks_v4::getImageUrl( $args, 'avatar_image_1', 'full' ) ?>" alt="<?php echo PG_Blocks_v4::getImageField( $args, 'avatar_image_1', 'alt', true); ?>" class="<?php echo (PG_Blocks_v4::getImageField( $args, 'avatar_image_1', 'id', true) ? ('wp-image-' . PG_Blocks_v4::getImageField( $args, 'avatar_image_1', 'id', true)) : '') ?> h-8 ring-2 ring-white rounded-full shadow w-8">

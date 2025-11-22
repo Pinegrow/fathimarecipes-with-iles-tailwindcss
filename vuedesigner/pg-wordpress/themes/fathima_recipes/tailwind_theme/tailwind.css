@@ -947,6 +947,9 @@ nav:where(.admin-bar *){
 .ml-auto{
   margin-left: auto;
 }
+.mr-auto{
+  margin-right: auto;
+}
 .mt-3{
   margin-top: 0.75rem;
 }
@@ -983,6 +986,9 @@ nav:where(.admin-bar *){
 .w-8{
   width: 2rem;
 }
+.w-full{
+  width: 100%;
+}
 .max-w-3xl{
   max-width: 48rem;
 }
@@ -994,6 +1000,9 @@ nav:where(.admin-bar *){
 }
 .items-center{
   align-items: center;
+}
+.justify-end{
+  justify-content: flex-end;
 }
 .justify-center{
   justify-content: center;
@@ -1069,6 +1078,9 @@ nav:where(.admin-bar *){
 .py-3{
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+.text-right{
+  text-align: right;
 }
 .font-sans{
   font-family: 'Proza Libre', sans-serif;
