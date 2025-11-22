@@ -6,7 +6,7 @@
                 <div class="backdrop-blur bg-white/80 p-6 ring-1 ring-white/50 rounded-xl shadow-lg sm:p-8 lg:p-10">
                     <div class="flex gap-2 items-center justify-start text-gray-700 text-sm w-full sm:text-base"> <span class="inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span> <span><?php echo PG_Blocks_v4::getAttribute( $args, 'badge_text' ) ?></span> 
                     </div>
-                    <h1 class="font-semibold mt-3 text-3xl text-gray-900 text-right tracking-tight sm:text-4xl lg:text-5xl"><?php echo PG_Blocks_v4::getAttribute( $args, 'main_heading' ) ?></h1>
+                    <h1 class="font-semibold lg:text-5xl mt-3 sm:text-4xl text-3xl text-gray-900 text-left tracking-tight"><?php echo PG_Blocks_v4::getAttribute( $args, 'main_heading' ) ?></h1>
                     <p class="mt-4 text-base sm:text-lg lg:text-xl text-gray-700 leading-relaxed text-left"><?php echo PG_Blocks_v4::getAttribute( $args, 'description' ) ?></p>
                     <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start">
                         <a href="<?php echo (!empty($_GET['context']) && $_GET['context'] === 'edit') ? 'javascript:void()' : PG_Blocks_v4::getLinkUrl( $args, 'primary_button_link' ) ?>" class="inline-flex items-center justify-center px-5 py-3 text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm text-sm sm:text-base"><?php echo PG_Blocks_v4::getAttribute( $args, 'primary_button_label' ) ?></a>
