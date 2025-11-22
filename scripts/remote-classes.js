@@ -22,4 +22,4 @@ function decode(str) {
 
 const decodedMarkup = decode(markup)
 
-fs.writeFileSync('_pginfo/remote-classes.html', decodedMarkup)
+fs.writeFileSync('src/remote-classes.html', decodedMarkup)
