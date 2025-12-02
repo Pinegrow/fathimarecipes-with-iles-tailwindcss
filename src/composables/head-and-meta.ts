@@ -1,4 +1,4 @@
-import { useHead, useSeoMeta } from '@unhead/vue'
+import { useHead, useScript, useSeoMeta } from '@unhead/vue'
 import { useSchemaOrg, defineWebSite, defineWebPage } from '@unhead/schema-org'
 
 import siteMeta from '@/site'
@@ -8,7 +8,6 @@ import { fontUrls } from '@/utils/font'
 
 import checkDarkTheme from '@/composables/dark-color-scheme-check?raw'
 import type { Script } from '@unhead/schema'
-import pgInteractions from '@/composables/interactions?raw'
 type TurboScript = Script & { once: true }
 
 export const useHeadAndMeta = (pageMeta: any) => {
@@ -97,9 +96,8 @@ export const useHeadAndMeta = (pageMeta: any) => {
     script: [
       { innerHTML: checkDarkTheme, once: true } as TurboScript,
       {
-        innerHTML: pgInteractions,
+        innerHTML: `;(function () { try { if (!document.documentElement.hasAttribute('data-pg-ia-disabled')) { window.pgia_small_mq = typeof pgia_small_mq == 'string' ? pgia_small_mq : '(max-width:767px)'; window.pgia_large_mq = typeof pgia_large_mq == 'string' ? pgia_large_mq : '(min-width:768px)'; const style = document.createElement('style'); let pgcss = 'html:not(.pg-ia-no-preview) [data-pg-ia-hide=""] {opacity:0;visibility:hidden;}html:not(.pg-ia-no-preview) [data-pg-ia-show=""] {opacity:1;visibility:visible;display:block;}'; if (document.documentElement.hasAttribute('data-pg-id') && document.documentElement.hasAttribute('data-pg-mobile')) { pgia_small_mq = '(min-width:0)'; pgia_large_mq = '(min-width:99999px)' } pgcss += '@media ' + pgia_small_mq + '{ html:not(.pg-ia-no-preview) [data-pg-ia-hide="mobile"] {opacity:0;visibility:hidden;}html:not(.pg-ia-no-preview) [data-pg-ia-show="mobile"] {opacity:1;visibility:visible;display:block;}}'; pgcss += '@media ' + pgia_large_mq + '{html:not(.pg-ia-no-preview) [data-pg-ia-hide="desktop"] {opacity:0;visibility:hidden;}html:not(.pg-ia-no-preview) [data-pg-ia-show="desktop"] {opacity:1;visibility:visible;display:block;}}'; style.innerHTML = pgcss; document.querySelector('head').appendChild(style); } } catch (e) { console && console.log(e); } })()`,
       } as TurboScript,
-      { src: 'pgia/lib/pgia.js', tagPosition: 'bodyClose' },
     ],
     link,
     noscript,
@@ -107,6 +105,8 @@ export const useHeadAndMeta = (pageMeta: any) => {
     bodyAttrs: {},
     style: [],
   })
+
+  useScript('/pgia/lib/pgia.js')
 
   const description = pageMeta.description || siteDescription
   const generator = pageMeta.generator || siteGenerator

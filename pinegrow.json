@@ -351,28 +351,18 @@
       "frameworks": [
         "@pinegrow/headless-wordpress",
         "project",
-        "pg.insight.events",
         "vite-plugin-vue-devtools",
-        "pg.vue.tree.painter",
         "@vue/devtools",
-        "pg.css.grid",
-        "pg.image.overlay",
-        "pg.code-validator",
-        "pg.project.items",
-        "pg.asset.manager",
         "iles",
         "@pinegrow/iles-module",
         "@islands/pages",
-        "app_designer",
         "unplugin-vue-components",
-        "@unocss/preset-icons",
         "unplugin-auto-import",
+        "app_designer",
         "vue",
-        "wordpress",
+        "@unocss/preset-icons",
         "tw.flowbite",
-        "tw",
-        "pg.html",
-        "pine.cone.lib"
+        "tw"
       ]
     },
     "src/components/StatsSection.svelte": {
@@ -1808,37 +1798,23 @@
     }
   },
   "template_framework_id": "vue",
-  "open-pages": [
-    "src/components/HeroSection.vue",
-    "src/components/RecipePosts.vue",
-    "src/pages/index.vue"
-  ],
+  "open-pages": ["src/components/HeroSection.vue"],
   "breakpoints": ["640px", "768px", "1024px", "1280px", "1536px"],
   "frameworks": [
     "@pinegrow/headless-wordpress",
     "project",
-    "pg.insight.events",
     "vite-plugin-vue-devtools",
-    "pg.vue.tree.painter",
     "@vue/devtools",
-    "pg.css.grid",
-    "pg.image.overlay",
-    "pg.code-validator",
-    "pg.project.items",
-    "pg.asset.manager",
     "iles",
     "@pinegrow/iles-module",
     "@islands/pages",
-    "app_designer",
     "unplugin-vue-components",
-    "@unocss/preset-icons",
     "unplugin-auto-import",
+    "app_designer",
     "vue",
-    "wordpress",
+    "@unocss/preset-icons",
     "tw.flowbite",
-    "tw",
-    "pg.html",
-    "pine.cone.lib"
+    "tw"
   ],
   "urls": {
     "src/pages/index.vue": { "open-page-views": [{ "w": 768, "h": 0 }] },

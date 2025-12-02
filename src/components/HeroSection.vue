@@ -14,6 +14,11 @@
 </script>
 <template>
   <!-- <div v-if="response.length" v-html="response.find(res => res.slug='header').content.rendered"></div> -->
-  <div v-if="hero" id="hero" v-html="hero.content.rendered"></div>
+  <div
+    v-if="hero"
+    id="hero"
+    :class="[hero.class_list]"
+    v-html="hero.content.rendered"
+  ></div>
 </template>
 <style scoped></style>
