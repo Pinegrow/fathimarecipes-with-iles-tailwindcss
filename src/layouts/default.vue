@@ -21,7 +21,7 @@
         <slot />
       </main>
       <!-- </main> -->
-      <TheFooter client:load />
+      <TheFooter />
     </div>
   </div>
 </template>
