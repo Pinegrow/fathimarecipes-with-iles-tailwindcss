@@ -8,13 +8,14 @@
     "url": "https://github.com/pinegrow/fathimarecipes-with-iles-tailwindcss.git"
   },
   "scripts": {
-    "dev": "npm-run-all --serial remote:tw:cls dev-only",
+    "dev": "npm-run-all --serial remote:tw:cls generate:types dev-only",
     "dev-only": "iles dev",
     "now": "npm run build && npm run preview",
     "lighthouse": "npx unlighthouse --no-cache --site https://fathimarecipes-with-iles-tailwindcss.netlify.app",
     "build": "npm-run-all --serial remote:tw:cls build-only",
     "build-only": "iles build",
     "remote:tw:cls": "node scripts/remote-classes.js",
+    "generate:types": "node ./scripts/generate-types.js",
     "preview": "iles preview --open --port 5050",
     "typecheck": "vue-tsc --noEmit",
     "lint": "npm run lint:fix && npm run format",
@@ -25,8 +26,13 @@
     "node": "^14.18 || >= 16.0.0"
   },
   "dependencies": {
+    "@directus/sdk": "^20.2.0",
+    "@directus/types": "^13.4.0",
+    "@directus/visual-editing": "^1.1.0",
     "@vueuse/core": "^12.4.0",
     "defu": "^6.1.4",
+    "directus-sdk-typegen": "^0.2.1",
+    "dotenv": "^17.2.3",
     "lite-youtube-embed": "^0.3.3",
     "pinia": "^2.3.0",
     "vee-validate": "^4.15.0"
@@ -45,6 +51,7 @@
     "@types/node": "^22.10.6",
     "@unhead/schema-org": "^1.11.16",
     "@unocss/preset-icons": "^65.4.0",
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",

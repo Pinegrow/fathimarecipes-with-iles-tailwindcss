@@ -10,8 +10,8 @@
         "unplugin-auto-import",
         "vite-plugin-vue-devtools",
         "pg.css.grid",
-        "pg.image.overlay",
         "@vue/devtools",
+        "pg.image.overlay",
         "pg.code-validator",
         "pg.project.items",
         "pg.asset.manager",
@@ -34,11 +34,11 @@
       "frameworks": [
         "@pinegrow/headless-wordpress",
         "vite-plugin-vue-devtools",
-        "pg.insight.events",
-        "@vue/devtools",
         "project",
-        "unplugin-auto-import",
+        "@vue/devtools",
+        "pg.insight.events",
         "pg.vue.tree.painter",
+        "unplugin-auto-import",
         "pg.css.grid",
         "pg.image.overlay",
         "pg.code-validator",
@@ -349,18 +349,19 @@
     "src/components/HeroSection.vue": {
       "last_used_route": "/",
       "frameworks": [
-        "@pinegrow/headless-wordpress",
+        "@pinegrow/headless-directus",
         "project",
+        "@pinegrow/headless-wordpress",
         "vite-plugin-vue-devtools",
         "@vue/devtools",
         "iles",
         "@pinegrow/iles-module",
         "@islands/pages",
+        "@unocss/preset-icons",
         "unplugin-vue-components",
         "unplugin-auto-import",
         "app_designer",
         "vue",
-        "@unocss/preset-icons",
         "tw.flowbite",
         "tw"
       ]
@@ -556,24 +557,21 @@
     "src/components/TheFooter.vue": {
       "last_used_route": "/",
       "frameworks": [
+        "@pinegrow/headless-directus",
+        "project",
+        "@pinegrow/headless-wordpress",
+        "unplugin-auto-import",
         "vite-plugin-vue-devtools",
         "@vue/devtools",
-        "pg.insight.events",
-        "project",
-        "pg.css.grid",
-        "pg.image.overlay",
-        "pg.code-validator",
         "@unocss/preset-icons",
-        "pg.project.items",
-        "pg.asset.manager",
+        "@islands/pages",
         "iles",
         "@pinegrow/iles-module",
-        "app_designer",
-        "@islands/pages",
-        "vue",
         "unplugin-vue-components",
-        "tw",
-        "pg.html"
+        "app_designer",
+        "vue",
+        "tw.flowbite",
+        "tw"
       ]
     },
     "src/components/BaseSecondaryCard.vue": {
@@ -1798,21 +1796,25 @@
     }
   },
   "template_framework_id": "vue",
-  "open-pages": ["src/components/HeroSection.vue"],
+  "open-pages": [
+    "src/components/HeroSection.vue",
+    "src/components/TheFooter.vue"
+  ],
   "breakpoints": ["640px", "768px", "1024px", "1280px", "1536px"],
   "frameworks": [
-    "@pinegrow/headless-wordpress",
+    "@pinegrow/headless-directus",
     "project",
+    "@pinegrow/headless-wordpress",
+    "unplugin-auto-import",
     "vite-plugin-vue-devtools",
     "@vue/devtools",
+    "@unocss/preset-icons",
+    "@islands/pages",
     "iles",
     "@pinegrow/iles-module",
-    "@islands/pages",
     "unplugin-vue-components",
-    "unplugin-auto-import",
     "app_designer",
     "vue",
-    "@unocss/preset-icons",
     "tw.flowbite",
     "tw"
   ],
@@ -2015,6 +2017,7 @@
     }
   },
   "recent-classes": [
+    "text-primary-900",
     "dark:prose-invert",
     "dark:prose-stone",
     "dark:prose-slate",
@@ -2113,8 +2116,7 @@
     "pg-inverse-surface",
     "lg:bg-design-image-large",
     "pg-surface-container",
-    "pg-on-surface-text",
-    "pg-on-surface"
+    "pg-on-surface-text"
   ],
   "ai-project-brief": "Fathima Recipe, a recipe blog sharing cooking adventures and delicious dishes. Clean and minimal design that emphasizes stunning food photography and maintains a clutter-free user experience. Features fresh greens and natural colors with a sophisticated mix of serif headings and sans-serif body text. Responsive and adaptable across all devices. IMPORTANT: All section background images will use creative means (dimmed background, text boxes, effects...) to ensure optimal text visibility and readability. Furthermore, the website's visual identity will exclusively use imagery related to food and cooking, including beautifully plated dishes, styled food photography, and finished culinary creations, ensuring a cohesive and authentic brand experience that makes visitors hungry and inspired to cook. Use custom color palette - Primary, Secondary, Tertiary tailwindcss color. ",
   "wp-theme-info": {
