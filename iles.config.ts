@@ -155,14 +155,17 @@ export default defineConfig({
           },
         },
       }),
-      basicSsl({
-        /** name of certification */
-        name: 'visual',
-        /** custom trust domains */
-        domains: ['*'],
-        /** custom certification directory */
-        // certDir: '/Users/.../.devServer/cert',
-      }),
+      {
+        ...basicSsl({
+          /** name of certification */
+          name: 'visual',
+          /** custom trust domains */
+          domains: ['*'],
+          /** custom certification directory */
+          // certDir: '/Users/.../.devServer/cert',
+        }),
+        apply: 'serve',
+      },
       VueDevTools(),
     ],
 
