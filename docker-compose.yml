@@ -6,7 +6,7 @@ services:
     container_name: iles
     working_dir: /app
     ports:
-      - '3000:80'
+      - '${ILES_PORT:-3000}:80'
     restart: always
     networks:
       - internal
