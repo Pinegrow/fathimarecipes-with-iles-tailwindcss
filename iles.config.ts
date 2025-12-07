@@ -7,7 +7,7 @@ import Unocss from 'unocss/vite'
 import presetIcons from '@unocss/preset-icons'
 import VueDevTools from 'vite-plugin-vue-devtools'
 import { unheadVueComposablesImports } from '@unhead/vue'
-import basicSsl from '@vitejs/plugin-basic-ssl'
+// import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // import myIlesModule from './src/modules/my-module'
 
@@ -155,17 +155,17 @@ export default defineConfig({
           },
         },
       }),
-      {
-        ...basicSsl({
-          /** name of certification */
-          name: 'visual',
-          /** custom trust domains */
-          domains: ['*'],
-          /** custom certification directory */
-          // certDir: '/Users/.../.devServer/cert',
-        }),
-        apply: 'serve',
-      },
+      // {
+      //   ...basicSsl({
+      //     /** name of certification */
+      //     name: 'visual',
+      //     /** custom trust domains */
+      //     domains: ['*'],
+      //     /** custom certification directory */
+      //     // certDir: '/Users/.../.devServer/cert',
+      //   }),
+      //   apply: 'serve',
+      // },
       VueDevTools(),
     ],
 
