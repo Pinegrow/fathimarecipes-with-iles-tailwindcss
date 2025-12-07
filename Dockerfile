@@ -2,7 +2,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci     # deterministic, fast, consistent builds
+RUN npm install     # deterministic, fast, consistent builds
 
 COPY . .
 RUN npm run build    # outputs /app/dist
