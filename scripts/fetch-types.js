@@ -7,7 +7,7 @@ async function generateTypes() {
     const env = loadEnv('', process.cwd())
 
     const types = await generateDirectusTypes({
-      directusUrl: 'http://localhost:8055',
+      directusUrl: env.VITE_DIRECTUS_URL,
       directusToken: env.VITE_DIRECTUS_SERVER_TOKEN,
     })
     // Do something else with the types

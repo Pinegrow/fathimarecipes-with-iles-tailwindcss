@@ -13,7 +13,7 @@ node_modules
 dist
 dist-ssr
 *.local
-.env
+.env*
 
 /cypress/videos/
 /cypress/screenshots/
@@ -30,6 +30,8 @@ dist-ssr
 *.sw?
 
 .iles-ssg-temp/
+
+directus
 
 # Pinegrow
 _pgbackup
