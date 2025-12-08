@@ -7,6 +7,8 @@ services:
       context: .
       dockerfile: Dockerfile # Points to the Dockerfile provided in your question
     image: techakayy/iles-frontend:latest # Name the resulting image (optional but good practice)
+    ports:
+      - '81:81'
     restart: always
     networks:
       - internal
