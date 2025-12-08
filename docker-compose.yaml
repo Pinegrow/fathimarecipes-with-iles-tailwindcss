@@ -2,9 +2,11 @@ name: iles-frontend
 
 services:
   frontend:
-    image: nginx:alpine
-    volumes:
-      - ./dist:/usr/share/nginx/html
+    # Instead of 'image: nginx:alpine', we build the image using the local Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile # Points to the Dockerfile provided in your question
+    image: techakayy/iles-frontend:latest # Name the resulting image (optional but good practice)
     ports:
       - '80:80'
     restart: always
