@@ -5,17 +5,9 @@ services:
     build: ./
     container_name: iles
     working_dir: /app
-    ports:
-      - '${ILES_PORT:-3000}:80'
     restart: always
     networks:
       - internal
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.frontend.rule: 'Host(`frontend.fathimarecipes.com`)'
-      traefik.http.routers.frontend.entrypoints: 'websecure'
-      traefik.http.routers.frontend.tls: 'true'
-      traefik.http.services.frontend.loadbalancer.server.port: '80'
 
 networks:
   internal:
