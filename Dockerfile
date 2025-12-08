@@ -8,7 +8,11 @@ RUN npm run build # Outputs to /app/dist
 
 # Stage 2: Serve the files using Nginx
 FROM nginx:alpine
-# Copy the built files from the 'builder' stage into Nginx's serving directory
+# Copy the built application files
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy the custom Nginx configuration file to override the default one
+COPY nginx.conf /etc/nginx/nginx.conf
+
 # Nginx starts automatically
 EXPOSE 80
