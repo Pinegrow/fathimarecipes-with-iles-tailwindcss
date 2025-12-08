@@ -2,9 +2,11 @@ name: iles-frontend
 
 services:
   frontend:
-    build: ./
-    container_name: iles
-    working_dir: /app
+    image: nginx:alpine
+    volumes:
+      - ./dist:/usr/share/nginx/html
+    ports:
+      - '80:80'
     restart: always
     networks:
       - internal
